@@ -21,19 +21,31 @@
         </div>
         <div style="width: 100%;">
           <div style="display: flex;width: 100%;">
-            <div class="box-room sm-640px">page수 : 2P</div>
-            <div class="box-room w-64">세로 최대 카드 수 : X12</div>
-            <div class="box-room w-64">P1 : y4</div>
+            <div class="box-room sm-640px">page수 : {{ pageNumber }}P</div>
+            <div class="box-room w-64">세로 최대 카드 수 : {{ xAxis }}</div>
+            <div class="box-room w-64">P1 : {{ yAxis }}</div>
             <div class="box-room w-64">P2 : y0</div>
           </div>
-          <div v-for="content in TotalData" :key="content" style="margin: 10px ;border: 3px solid ; ">
-            <div :style="'grid-template-columns: repeat(' + content.size + ', 1fr);'"
-              style="display: grid; height: 100%; width: 100%;">
-              <div v-for="item in content.col" :key="item" style="display: grid; grid-template-rows: repeat(12, 1fr);">
-                <div v-for="box, index in item" :key="box" :class="[`box-${box.type}`]">
-                  {{ convertToRoom(box.name, box.type, index) }}
-                  <span v-if="box.type === 'bed'">- {{ index - beforeIndex }}</span>
+          <!-- <div v-if="TotalData != null">
+            <div v-for="content in TotalData" :key="content" style="margin: 10px ;border: 3px solid ; ">
+              <div :style="'grid-template-columns: repeat(' + content.size + ', 1fr);'"
+                style="display: grid; height: 100%; width: 100%;">
+                <div v-for="item in content.col" :key="item" style="display: grid;"
+                  :style="'grid-template-rows: repeat(' + xAxis + ', 1fr);'">
+                  <div v-for="box, index in item" :key="box" :class="[`box-${box.type}`]">
+                    {{ convertToRoom(box.name, box.type, index) }}
+                    <span v-if="box.type === 'bed'">- {{ index - beforeIndex }}</span>
+                  </div>
                 </div>
+              </div>
+            </div>
+          </div> -->
+          <div style="margin: 10px ;border: 3px solid ; ">
+            <div :style="gridStyle">
+              <div v-for="(content, index) in subArray" :key="content" :class="[`box-${content?.type}`]">
+                {{ convertToRoom(content?.name, content?.type, index) }}
+                <span v-if="content?.type === 'bed'">- {{ index - beforeIndex }}</span>
+                {{ index }}
               </div>
             </div>
           </div>
@@ -43,10 +55,11 @@
   </div>
 </template>
 <script setup>
-import { ref, onBeforeMount, reactive } from 'vue';
+import { ref, onBeforeMount, reactive, computed } from 'vue';
 const yAxis = ref(3)
 const xAxis = ref(12)
 const pageNumber = ref(2)
+const currPage = ref(0)
 const contents =
   [
     {
@@ -74,32 +87,39 @@ const contents =
       { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "room", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, "", ""], [{ "type": "room", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, "", "", "", "", "", ""]]
     }
   ]
-let TotalData = reactive(contents)
-
-
+const gridStyle = computed(() => ({
+  display: 'grid',
+  gridAutoFlow: 'column',// 열 방향으로 그리드 아이템 나열
+  gridTemplateRows: `repeat(${xAxis.value}, 1fr)`,
+  gridTemplateColumns: `repeat(${yAxis.value}, 1fr)`
+}));
+const subArray = computed(() => getSubArray(0, 36));
+let TotalData = reactive(null)
 function getCreatedPageData() {
   const newData = [];
-  const yLength = yAxis.value
+  const yLength = yAxis.value;
+  let count = 0
   for (let i = 0; i < pageNumber.value; i++) {
-    newData.push({
-      size: yLength,
-      col: []
-    });
+    const page = { size: yLength, col: [] };
     for (let range = 0; range < yLength; range++) {
-      newData[i].col[range] = []
+      const col = [];
       for (let temp = 0; temp < xAxis.value; temp++) {
-        const currPage = (i * yLength * xAxis.value) + range * xAxis.value + temp
-        if (newIntDataArray[currPage]) {
-          newData[i].col[range].push(newIntDataArray[currPage])
-        } else
-          newData[i].col[range].push('');
+        const currPage = count++
+        col.push(newIntDataArray[currPage] || '');
       }
+      page.col.push(col);
     }
+    newData.push(page);
   }
   return newData;
 }
-let newIntDataArray = new Array(pageNumber.value * yAxis.value * xAxis.value)
 
+let newIntDataArray = new Array(pageNumber.value * yAxis.value * xAxis.value)
+function getSubArray(start) {
+  console.log('object :>> ', newIntDataArray);
+
+  return newIntDataArray.slice(start, 102);
+}
 const newContents = reactive([{
   size: 3,
   col: []
@@ -108,18 +128,18 @@ const newContents = reactive([{
 const currData = reactive({})
 function getContents(contents) {
   let size = 0
+  let currDataIndex = 0
   for (const content of contents) {
     for (const item in content.col) {
       let count = 0 //
       for (const data of content.col[item]) {
-        const currDataIndex = ((parseInt(item) + size) * xAxis.value + count)
         ++count
         if (data.type == 'room') {
           if (!currData[data.name]) {
             currData[data.name] = {
               startPoint: numberToAlphabet(parseInt(item) + size) + count,
-              // start: parseInt(item) * size + count,
-              // end: 0,
+              start: currDataIndex,
+              end: 0,
               endPoint: ''
             }
             newIntDataArray[currDataIndex] = { type: 'room', name: data.name }
@@ -134,10 +154,11 @@ function getContents(contents) {
           }
         }
         if (data.type == 'bed') {
-          // todo 
           currData[data.name].endPoint = numberToAlphabet(parseInt(item) + size) + count
+          currData[data.name].end = currDataIndex
           newIntDataArray[currDataIndex] = { type: 'bed', name: data.name }
         }
+        currDataIndex++
       }
     }
     size += content.size // 다음 table 시 size 설정용
@@ -165,6 +186,8 @@ const itemList = ref({
   "data": [{
     "_id": "65a48e674a64efd1ca01c37d",
     "room_name": "3", "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "5", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
+  }, {
+    "room_name": "19", "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "2", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
   },
   {
     "_id": "65a48e674a64efd1ca01c37f", "room_name": "6", "ward_name": "63병동",

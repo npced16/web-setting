@@ -8,8 +8,8 @@ import loginView from '@/components/loginView.vue'
   <!-- <div style="height: 100vh;">
     <loginView />
   </div> -->
-  <TitleVue />
-  <TableVue />
+  <!-- <TitleVue /> -->
+  <!-- <TableVue /> -->
   <HelloWorld />
 </template>
 
