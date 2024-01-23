@@ -1,7 +1,8 @@
 <template>
   <div class="primary-frame">
     <div class="primary-body">
-      <select v-model="selectWard">
+      <select class="ui-active:bg-blue-500 ui-active:text-white ui-not-active:bg-white ui-not-active:text-black"
+        v-model="selectWard">
         <option value="null" selected>병동 선택</option>
         <option v-for="ward in wardList" :value="ward" :key="ward">{{ ward }}</option>
       </select>
@@ -25,7 +26,7 @@
             <div class="box-room w-64">P1 : y4</div>
             <div class="box-room w-64">P2 : y0</div>
           </div>
-          <div v-for="content in contents" :key="content.id" style="margin: 10px ;border: 3px solid ; ">
+          <div v-for="content in TotalData" :key="content" style="margin: 10px ;border: 3px solid ; ">
             <div :style="'grid-template-columns: repeat(' + content.size + ', 1fr);'"
               style="display: grid; height: 100%; width: 100%;">
               <div v-for="item in content.col" :key="item" style="display: grid; grid-template-rows: repeat(12, 1fr);">
@@ -43,32 +44,61 @@
 </template>
 <script setup>
 import { ref, onBeforeMount, reactive } from 'vue';
+const yAxis = ref(3)
+const xAxis = ref(12)
+const pageNumber = ref(2)
 const contents =
-  [{
-    "size": 3,
-    "col":
-      [
-        [{ "type": "room", "name": "2" }, { "type": "bed", "name": "2" }, { "type": "bed", "name": "2" }, "", "",
-          "", { "type": "room", "name": "3" }, { "type": "bed", "name": "3" }, { "type": "bed", "name": "3" }, { "type": "bed", "name": "3" },
-        { "type": "bed", "name": "3" }, { "type": "bed", "name": "3" }
-        ],
+  [
+    {
+      "size": 3,
+      "col":
         [
-          { "type": "room", "name": "5" }, { "type": "bed", "name": "5" }, { "type": "bed", "name": "5" }, { "type": "bed", "name": "5" }, { "type": "bed", "name": "5" },
-          { "type": "bed", "name": "5" }, { "type": "room", "name": "6" }, { "type": "bed", "name": "6" }, { "type": "bed", "name": "6" }, "",
-          "", ""
-        ],
-        [
-          { "type": "room", "name": "7" }, { "type": "bed", "name": "7" }, "", "", "",
-          "", { "type": "room", "name": "10" }, { "type": "bed", "name": "10" }, { "type": "bed", "name": "10" }, "",
-          "", ""
+          [{ "type": "room", "name": "2" }, { "type": "bed", "name": "2" }, { "type": "bed", "name": "2" }, "", "",
+            "", { "type": "room", "name": "3" }, { "type": "bed", "name": "3" }, { "type": "bed", "name": "3" }, { "type": "bed", "name": "3" },
+          { "type": "bed", "name": "3" }, { "type": "bed", "name": "3" }
+          ],
+          [
+            { "type": "room", "name": "5" }, { "type": "bed", "name": "5" }, { "type": "bed", "name": "5" }, { "type": "bed", "name": "5" }, { "type": "bed", "name": "5" },
+            { "type": "bed", "name": "5" }, { "type": "room", "name": "6" }, { "type": "bed", "name": "6" }, { "type": "bed", "name": "6" }, "",
+            "", ""
+          ],
+          [
+            { "type": "room", "name": "7" }, { "type": "bed", "name": "7" }, "", "", "",
+            "", { "type": "room", "name": "10" }, { "type": "bed", "name": "10" }, { "type": "bed", "name": "10" }, "",
+            "", ""
+          ]
         ]
-      ]
-  },
-  {
-    "size": 3, "col": [[{ "type": "room", "name": "12" }, { "type": "bed", "name": "12" }, "", "", "", "", { "type": "room", "name": "13" }, { "type": "bed", "name": "13" }, "", "", "", ""], [{ "type": "room", "name": "15" }, { "type": "bed", "name": "15" },
-    { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "room", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, "", ""], [{ "type": "room", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, "", "", "", "", "", ""]]
-  }
+    },
+    {
+      "size": 3, "col": [[{ "type": "room", "name": "12" }, { "type": "bed", "name": "12" }, "", "", "", "", { "type": "room", "name": "13" }, { "type": "bed", "name": "13" }, "", "", "", ""], [{ "type": "room", "name": "15" }, { "type": "bed", "name": "15" },
+      { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "room", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, "", ""], [{ "type": "room", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, "", "", "", "", "", ""]]
+    }
   ]
+let TotalData = reactive(contents)
+
+
+function getCreatedPageData() {
+  const newData = [];
+  const yLength = yAxis.value
+  for (let i = 0; i < pageNumber.value; i++) {
+    newData.push({
+      size: yLength,
+      col: []
+    });
+    for (let range = 0; range < yLength; range++) {
+      newData[i].col[range] = []
+      for (let temp = 0; temp < xAxis.value; temp++) {
+        const currPage = (i * yLength * xAxis.value) + range * xAxis.value + temp
+        if (newIntDataArray[currPage]) {
+          newData[i].col[range].push(newIntDataArray[currPage])
+        } else
+          newData[i].col[range].push('');
+      }
+    }
+  }
+  return newData;
+}
+let newIntDataArray = new Array(pageNumber.value * yAxis.value * xAxis.value)
 
 const newContents = reactive([{
   size: 3,
@@ -77,19 +107,22 @@ const newContents = reactive([{
 
 const currData = reactive({})
 function getContents(contents) {
-
   let size = 0
   for (const content of contents) {
     for (const item in content.col) {
-      let count = 0
+      let count = 0 //
       for (const data of content.col[item]) {
+        const currDataIndex = ((parseInt(item) + size) * xAxis.value + count)
         ++count
         if (data.type == 'room') {
           if (!currData[data.name]) {
             currData[data.name] = {
               startPoint: numberToAlphabet(parseInt(item) + size) + count,
+              // start: parseInt(item) * size + count,
+              // end: 0,
               endPoint: ''
             }
+            newIntDataArray[currDataIndex] = { type: 'room', name: data.name }
             if (!currData?.table) {
               currData.table = {};
             }
@@ -100,7 +133,11 @@ function getContents(contents) {
             }
           }
         }
-        if (data.type == 'bed') currData[data.name].endPoint = numberToAlphabet(parseInt(item) + size) + count
+        if (data.type == 'bed') {
+          // todo 
+          currData[data.name].endPoint = numberToAlphabet(parseInt(item) + size) + count
+          newIntDataArray[currDataIndex] = { type: 'bed', name: data.name }
+        }
       }
     }
     size += content.size // 다음 table 시 size 설정용
@@ -112,6 +149,8 @@ function numberToAlphabet(number) {
   return String.fromCodePoint(parseInt(number) + 65)
 }
 
+
+
 function settingContents() {
   for (const list of itemList.value.data) {
     if (!currData[list.room_name] && list.room_name) {
@@ -122,7 +161,6 @@ function settingContents() {
     }
   }
 }
-
 const itemList = ref({
   "data": [{
     "_id": "65a48e674a64efd1ca01c37d",
@@ -163,15 +201,16 @@ const itemList = ref({
     "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "2", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-16 00:07:55"
   }]
 })
+
+
 itemList.value.data.sort((a, b) => {
   // room_bedNum을 숫자로 변환하여 비교
   const bedNumA = parseInt(a.room_name);
   const bedNumB = parseInt(b.room_name);
   return bedNumA - bedNumB;
 });
-
-console.log('itemList :>> ', itemList.value);
 let beforeIndex;
+
 function convertToRoom(roomNumber, type, index) {
   if (type == 'room') {
     beforeIndex = index;
@@ -188,7 +227,7 @@ function addNumberToCell(bedNumber, baseCell) {
   }
   const [, baseAlpha, baseNum] = baseCell.match(baseRegex);
   const resultNum = Number(baseNum) + Number(bedNumber);
-  if (resultNum > 12) {
+  if (resultNum > xAxis.value) {
     return '';
   }
   return `${baseAlpha}${resultNum}`;
@@ -197,7 +236,9 @@ function updateStartPoint(roomName, roomBedNum, value) {
   const convertRoomNumber = addNumberToCell(roomBedNum, value);
   if (convertRoomNumber === '') {
     console.error('Error: Invalid input');
-    return;
+    currData[roomName].startPoint = value;
+    currData[roomName].endPoint = null;
+    return '';
   }
   currData[roomName].startPoint = value;
   currData[roomName].endPoint = convertRoomNumber;
@@ -206,14 +247,12 @@ function updateStartPoint(roomName, roomBedNum, value) {
 const wardList = ["61병동", "63병동", "133병동", "81병동"]
 const selectWard = ref(null)
 
-function makeNewContents() {
-  console.log('table :>> ', currData.table);
 
-}
 onBeforeMount(() => {
   getContents(contents)
   settingContents()
-  makeNewContents()
+  TotalData = getCreatedPageData()
+
 })
 
 
