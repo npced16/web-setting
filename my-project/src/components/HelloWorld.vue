@@ -6,46 +6,61 @@
         <option value="null" selected>병동 선택</option>
         <option v-for="ward in wardList" :value="ward" :key="ward">{{ ward }}</option>
       </select>
+
       <div style=" display: flex;">
         <div style=" height: 300px; ">
-          <div style="display: flex;" v-for="list in itemList.data" :key="list">
-            <div class="box-bed">{{ convertToRoomNumber(list.room_name) }}</div>
-            <div class="box-bed"> {{ list.room_bedNum }}인실</div>
-            <input class="box-bed" :value="currData[list.room_name]?.startPoint"
-              :v-model="currData[list.room_name].startPoint"
-              @input="updateStartPoint(list.room_name, list.room_bedNum, $event.target.value)" />
-            <!-- {{ currData[list.room_name].startPoint }} -->
-
-            <div class="box-room">{{ currData[list.room_name]?.endPoint }}</div>
-          </div>
-        </div>
-        <div style="width: 100%;">
-          <div style="display: flex;width: 100%;">
-            <div class="box-room sm-640px">page수 : {{ pageNumber }}P</div>
-            <div class="box-room w-64">세로 최대 카드 수 : {{ xAxis }}</div>
-            <div class="box-room w-64">P1 : {{ yAxis }}</div>
-            <div class="box-room w-64">P2 : y0</div>
-          </div>
-          <!-- <div v-if="TotalData != null">
-            <div v-for="content in TotalData" :key="content" style="margin: 10px ;border: 3px solid ; ">
-              <div :style="'grid-template-columns: repeat(' + content.size + ', 1fr);'"
-                style="display: grid; height: 100%; width: 100%;">
-                <div v-for="item in content.col" :key="item" style="display: grid;"
-                  :style="'grid-template-rows: repeat(' + xAxis + ', 1fr);'">
-                  <div v-for="box, index in item" :key="box" :class="[`box-${box.type}`]">
-                    {{ convertToRoom(box.name, box.type, index) }}
-                    <span v-if="box.type === 'bed'">- {{ index - beforeIndex }}</span>
-                  </div>
-                </div>
+          <section class="container mx-auto p-6 font-mono">
+            <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
+              <div class="w-full overflow-x-auto">
+                <table class=" w-full">
+                  <thead>
+                    <tr
+                      class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
+                      <th class="px-4 py-3 text-center min-w-32">병실 명 </th>
+                      <th class="px-4 py-3 text-center min-w-32">침상 수 </th>
+                      <th class="px-4 py-3 text-center min-w-32">시작 위치</th>
+                      <th class="px-4 py-3 text-center min-w-32">마지막 위치</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white">
+                    <tr class="text-gray-700" v-for="list in itemList.data" :key="list">
+                      <td class="px-4 py-3 border">
+                        <!-- <div class="flex items-center text-sm"> -->
+                        <!-- <div> -->
+                        <div class="font-semibold text-center">{{ convertToRoomNumber(list.room_name) }}</div>
+                        <!-- <p class="text-xs text-gray-600">Developer</p> -->
+                        <!-- </div> -->
+                        <!-- </div> -->
+                      </td>
+                      <td class="px-4 py-3 border text-md font-semibold text-center">{{ list.room_bedNum }}</td>
+                      <td class="px-4 py-3 border text-xs">
+                        <input class="px-2 py-1 font-semibold leading-tight rounded-sm"
+                          :value="currData[list.room_name]?.startPoint"
+                          @input="updateStartPoint(list.room_bedNum, list.room_name, $event.target.value)"
+                          :class="{ 'bg-green-100 text-green-700': currData[list.room_name]?.endPoint !== null, 'bg-red-100 text-red-700': currData[list.room_name]?.endPoint == null }">
+                      </td>
+                      <td class="px-4 py-3 border text-sm">{{ currData[list.room_name]?.endPoint }}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
-          </div> -->
-          <div style="margin: 10px ;border: 3px solid ; ">
-            <div :style="gridStyle">
-              <div v-for="(content, index) in subArray" :key="content" :class="[`box-${content?.type}`]">
+          </section>
+        </div>
+        <div class="w-full">
+          <div class="flex w-full">
+            <div class="box-room w-32">page수 : {{ pageNumber }}P</div>
+            <div class="box-room w-32">세로 최대 카드 수 : {{ xAxis }}</div>
+            <div v-for="pageIndex in pageNumber" :key="pageIndex" class="box-room w-32">
+              Page {{ pageIndex }} : {{ yAxis[pageIndex - 1] }}
+            </div>
+          </div>
+
+          <div class="flex flex-auto w-full  flex-wrap">
+            <div v-for="columnIndex in pageNumber" :key="columnIndex" class="w-6/12" :style="gridStyle(columnIndex)">
+              <div v-for="(content, index) in getSubArray(columnIndex)" :key="content" :class="[`box-${content?.type}`]">
                 {{ convertToRoom(content?.name, content?.type, index) }}
                 <span v-if="content?.type === 'bed'">- {{ index - beforeIndex }}</span>
-                {{ index }}
               </div>
             </div>
           </div>
@@ -56,10 +71,10 @@
 </template>
 <script setup>
 import { ref, onBeforeMount, reactive, computed } from 'vue';
-const yAxis = ref(3)
+const yAxis = ref([3, 3])
 const xAxis = ref(12)
 const pageNumber = ref(2)
-const currPage = ref(0)
+
 const contents =
   [
     {
@@ -87,25 +102,37 @@ const contents =
       { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "room", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, "", ""], [{ "type": "room", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, "", "", "", "", "", ""]]
     }
   ]
-const gridStyle = computed(() => ({
-  display: 'grid',
-  gridAutoFlow: 'column',// 열 방향으로 그리드 아이템 나열
-  gridTemplateRows: `repeat(${xAxis.value}, 1fr)`,
-  gridTemplateColumns: `repeat(${yAxis.value}, 1fr)`
-}));
-const subArray = computed(() => getSubArray(0, 36));
-let TotalData = reactive(null)
+// const gridStyle = computed(() => ({
+//   display: 'grid',
+//   gridAutoFlow: 'column',// 열 방향으로 그리드 아이템 나열
+//   gridTemplateRows: `repeat(${xAxis.value}, 1fr)`,
+//   gridTemplateColumns: `repeat(${yAxis.value}, 1fr)`
+// }));
+
+function gridStyle(index) {
+  const rowstyle = yAxis.value[index - 1] || 3
+  const style = {
+    display: 'grid',
+    gridAutoFlow: 'column',// 열 방향으로 그리드 아이템 나열
+    gridTemplateRows: `repeat(${xAxis.value}, 1fr)`,
+    gridTemplateColumns: `repeat(${rowstyle}, 1fr)`,
+    border: `5px solid #1fF211`,
+    padding: '4px',
+    borderRadius: "15px"
+  }
+  return style
+}
 function getCreatedPageData() {
   const newData = [];
-  const yLength = yAxis.value;
   let count = 0
   for (let i = 0; i < pageNumber.value; i++) {
+    const yLength = yAxis.value[i];
     const page = { size: yLength, col: [] };
     for (let range = 0; range < yLength; range++) {
       const col = [];
       for (let temp = 0; temp < xAxis.value; temp++) {
         const currPage = count++
-        col.push(newIntDataArray[currPage] || '');
+        col.push(currDataArray[currPage] || '');
       }
       page.col.push(col);
     }
@@ -114,16 +141,12 @@ function getCreatedPageData() {
   return newData;
 }
 
-let newIntDataArray = new Array(pageNumber.value * yAxis.value * xAxis.value)
-function getSubArray(start) {
-  console.log('object :>> ', newIntDataArray);
-
-  return newIntDataArray.slice(start, 102);
+let currDataArray = reactive([])
+function getSubArray(currPage) {
+  const curryAxis = yAxis.value[currPage - 1] * xAxis.value || 3 * xAxis.value
+  if (currPage > 0) { return currDataArray.slice((currPage - 1) * curryAxis, currPage * curryAxis); }
+  return currDataArray.slice(currPage * curryAxis);
 }
-const newContents = reactive([{
-  size: 3,
-  col: []
-}])
 
 const currData = reactive({})
 function getContents(contents) {
@@ -140,9 +163,9 @@ function getContents(contents) {
               startPoint: numberToAlphabet(parseInt(item) + size) + count,
               start: currDataIndex,
               end: 0,
-              endPoint: ''
+              endPoint: null
             }
-            newIntDataArray[currDataIndex] = { type: 'room', name: data.name }
+            currDataArray[currDataIndex] = { type: 'room', name: data.name }
             if (!currData?.table) {
               currData.table = {};
             }
@@ -156,7 +179,7 @@ function getContents(contents) {
         if (data.type == 'bed') {
           currData[data.name].endPoint = numberToAlphabet(parseInt(item) + size) + count
           currData[data.name].end = currDataIndex
-          newIntDataArray[currDataIndex] = { type: 'bed', name: data.name }
+          currDataArray[currDataIndex] = { type: 'bed', name: data.name }
         }
         currDataIndex++
       }
@@ -170,18 +193,19 @@ function numberToAlphabet(number) {
   return String.fromCodePoint(parseInt(number) + 65)
 }
 
-
-
 function settingContents() {
   for (const list of itemList.value.data) {
     if (!currData[list.room_name] && list.room_name) {
       currData[list.room_name] = {
         startPoint: '',
-        endPoint: ''
+        endPoint: null
       }
     }
   }
 }
+/**
+ *  병실의 목록 가져오기
+ */
 const itemList = ref({
   "data": [{
     "_id": "65a48e674a64efd1ca01c37d",
@@ -200,10 +224,12 @@ const itemList = ref({
   }, {
     "_id": "65a48e674a64efd1ca01c386", "room_name": "7", "ward_name": "63병동",
     "editBy": "ext-linker", "room_bedNum": "1", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
-  }, {
+  },
+  {
     "_id": "65a48e674a64efd1ca01c388", "room_name": "10",
     "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "2", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
-  }, {
+  },
+  {
     "_id": "65a48e674a64efd1ca01c389",
     "room_name": "12", "ward_name": "63병동",
     "editBy": "ext-linker", "room_bedNum": "1", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
@@ -224,16 +250,13 @@ const itemList = ref({
     "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "2", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-16 00:07:55"
   }]
 })
-
-
 itemList.value.data.sort((a, b) => {
-  // room_bedNum을 숫자로 변환하여 비교
   const bedNumA = parseInt(a.room_name);
   const bedNumB = parseInt(b.room_name);
   return bedNumA - bedNumB;
 });
-let beforeIndex;
 
+let beforeIndex;
 function convertToRoom(roomNumber, type, index) {
   if (type == 'room') {
     beforeIndex = index;
@@ -243,38 +266,130 @@ function convertToRoom(roomNumber, type, index) {
 function convertToRoomNumber(roomNumber) {
   if (roomNumber) return `${String(roomNumber).padStart(2, '0')}호`;
 }
-function addNumberToCell(bedNumber, baseCell) {
+/**
+ * 문자열을 받아 계산하여 새로운 값을 반환하는 함수입니다.
+ *
+ * @param {number} roomBedNum - 침상 수
+ * @param {string} value - 입력값 (예: 'A1', 'B2')
+ *
+ * @returns {(Array|boolean)} - 계산된 데이터값과 범위의 시작 및 끝을 포함하는 배열
+ *                            (예: ['A3', 5, 7]) 또는 false (입력 오류 시)
+ *                            
+ * @example
+ * // 사용 예제
+ * var result = addNumberToCell(2, 'A1');
+ * console.log(result); // ['A3', 1, 3]
+ */
+function addNumberToCell(roomBedNum, value) {
   const baseRegex = /^([a-zA-Z]+)([0-9]+)$/;
-  if (!bedNumber || !baseCell || baseCell.match(baseRegex) === null) {
-    return '';
+
+  // 입력값이 없거나 정규식과 매치되지 않으면 false 반환
+  if (!value || value.match(baseRegex) === null) {
+    return false;
   }
-  const [, baseAlpha, baseNum] = baseCell.match(baseRegex);
-  const resultNum = Number(baseNum) + Number(bedNumber);
+
+  const [, baseAlpha, baseNum] = value.match(baseRegex);
+  if (baseNum == 0) {
+    return false;
+  }
+  const upperAlpha = baseAlpha.toUpperCase();
+
+  // 현재 데이터 숫자 계산
+  const currDataNumber = (upperAlpha.charCodeAt(0) - 'A'.charCodeAt(0)) * xAxis.value + Number(baseNum);
+
+  // 결과 숫자 계산
+  const resultNum = Number(baseNum) + Number(roomBedNum);
+
+  // 결과 숫자가 범위를 초과하면 false 반환
   if (resultNum > xAxis.value) {
-    return '';
+    return false;
   }
-  return `${baseAlpha}${resultNum}`;
+
+  // 결과값과 범위의 시작과 끝을 배열로 반환
+  return [`${upperAlpha}${resultNum}`, currDataNumber, currDataNumber + Number(roomBedNum)];
 }
-function updateStartPoint(roomName, roomBedNum, value) {
+
+
+/**
+ * 
+ * @param {*} roomBedNum 침상 수
+ * @param {*} roomName 병실 이름
+ * @param {*} value 입력값
+ */
+function updateStartPoint(roomBedNum, roomName, value) {
+  console.log('value :>> ', roomBedNum, roomName, value);
+  deleteBedInList(roomName)
+  // console.log('  :>> ', addBedInList(10, 12, 24,));
+
   const convertRoomNumber = addNumberToCell(roomBedNum, value);
-  if (convertRoomNumber === '') {
+  if (!convertRoomNumber) {
     console.error('Error: Invalid input');
     currData[roomName].startPoint = value;
     currData[roomName].endPoint = null;
     return '';
   }
-  currData[roomName].startPoint = value;
-  currData[roomName].endPoint = convertRoomNumber;
+  if (!isEmptyBed(convertRoomNumber[1], convertRoomNumber[2])) {
+    console.error('Error: add Error');
+    currData[roomName].startPoint = value;
+    currData[roomName].endPoint = null;
+    return '';
+  }
+  if (!addBedInList(roomName, convertRoomNumber[1], convertRoomNumber[2])) {
+    console.error('Error: add Error');
+    currData[roomName].startPoint = value;
+    currData[roomName].endPoint = null;
+    return '';
+  }
+  currData[roomName].startPoint = addNumberToCell(0, value)[0];
+  currData[roomName].endPoint = convertRoomNumber[0];
+
+}
+
+/**
+ * 주어진 RoomName 에 따라 데이터를 지움
+ * @param {*} roomName 병실 이름 
+ */
+function deleteBedInList(roomName) {
+
+  for (const item in currDataArray) {
+    if (parseInt(currDataArray[item]?.name) == roomName) {
+      delete currDataArray[item]
+    }
+  }
+  console.log('nexIntDataArray :>> ', currDataArray);
+}
+function addBedInList(roomBedNum, startPoint, endPoint) {
+  if (isEmptyBed(startPoint - 1, endPoint)) {
+    // if is empty array , push newData
+    for (let i = startPoint - 1; i < endPoint; i++) {
+      if (i == startPoint - 1) {
+        currDataArray[i] = { type: 'room', name: roomBedNum }
+      } else
+        currDataArray[i] = { type: 'bed', name: roomBedNum }
+    }
+    console.log('nexIntDataArray :>> ', currDataArray);
+    return true
+  }
+  return false
+}
+function isEmptyBed(startPoint, endPoint) {
+  if (startPoint && endPoint) {
+    const newArray = currDataArray.slice(startPoint, endPoint)
+    for (const item of newArray) {
+      console.log('newArray :>> ', newArray);
+      if (item != undefined) return false
+    }
+  }
+  return true
 }
 
 const wardList = ["61병동", "63병동", "133병동", "81병동"]
 const selectWard = ref(null)
 
-
 onBeforeMount(() => {
   getContents(contents)
   settingContents()
-  TotalData = getCreatedPageData()
+  getCreatedPageData()
 
 })
 
@@ -288,7 +403,7 @@ onBeforeMount(() => {
   color: #ffffff;
   border-radius: 5px;
   text-align: center;
-  min-width: 80px;
+  min-width: 60px;
   margin: 3px;
   padding: 1px;
 }
@@ -300,7 +415,7 @@ onBeforeMount(() => {
   border-radius: 5px;
   margin: 3px;
   padding: 1px;
-  min-width: 80px;
+  min-width: 60px;
 
 }
 
