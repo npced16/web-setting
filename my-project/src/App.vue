@@ -1,6 +1,6 @@
 <script setup>
 import TitleVue from '@/components/title.vue';
-import HelloWorld from '@/components/HelloWorld.vue'
+import ThePageSettingView from '@/components/ThePageSettingView.vue'
 import TableVue from '@/components/table.vue';
 import loginView from '@/components/loginView.vue'
 </script>
@@ -8,9 +8,11 @@ import loginView from '@/components/loginView.vue'
   <!-- <div style="height: 100vh;">
     <loginView />
   </div> -->
-  <TitleVue />
-  <!-- <TableVue /> -->
-  <HelloWorld />
+  <div class="flex flex-col h-screen">
+    <TitleVue />
+    <!-- <TableVue /> -->
+    <ThePageSettingView style="height: 93%;" />
+  </div>
 </template>
 
 <style scoped></style>

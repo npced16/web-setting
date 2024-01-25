@@ -1,22 +1,57 @@
 <template>
-  <div class="flex ">
-    <section class="container w-2/6 mx-auto p-6 font-mono">
-      <select id="underline_select" v-model="selectWard"
-        class="mb-2 block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
-        <option value="null" selected>병동 선택</option>
-        <option v-for="ward in wardList" :value="ward" :key="ward">{{ ward }}</option>
-      </select>
-
-      <div class="mb-8 overflow-hidden rounded-lg shadow-lg">
-        <div class="w-full overflow-x-auto">
-          <table class=" w-full">
+  <div class="">
+    <div class="flex gap-6 px-4 " style="height: 10%;">
+      <div class="p-4 sm:w-2/6  lg:w-1/6 ">
+        <select id="underline_select" v-model="selectWard"
+          class="px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
+          <option value="null" selected>병동 선택</option>
+          <option v-for="ward in wardList" :value="ward" :key="ward">{{ ward }}</option>
+        </select>
+      </div>
+      <div class="sm:w-4/6  lg:w-5/6 ">
+        <div class="m-4">
+          <table class="w-full">
             <thead>
               <tr
                 class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
-                <th class="px-4 py-3 text-center ">병실 명 </th>
-                <th class="px-4 py-3 text-center ">침상 수 </th>
-                <th class="px-4 py-3 text-center ">시작 위치</th>
-                <th class="px-4 py-3 text-center ">마지막 위치</th>
+                <th class="text-center ">page </th>
+                <th class="text-center ">X축 최대 수 </th>
+                <th class="text-center " v-for="item in pageNumber">{{ item }}</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white">
+              <tr class="text-gray-700">
+                <td class=" border">
+                  <input class="w-full font-semibold text-center" type="number" pattern="[0-9]*" v-model="pageNumber" />
+                </td>
+                <td class=" border text-md font-semibold text-center">
+                  <input class="w-full font-semibold text-center" v-model="xAxis" />
+                </td>
+                <td class=" border text-xs" v-for="pageIndex in pageNumber">
+                  <select id="underline_select" v-model="yAxis[pageIndex - 1]" type="number"
+                    class=" text-center block  w-full text-sm  ">
+                    <option value="3" selected>3</option>
+                    <option value="4" selected>4</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+    <div class="flex gap-4 px-4 h-4/5">
+      <section class="container  sm:w-2/6  lg:w-1/6  mx-auto font-mono">
+        <div class="mb-8 overflow-auto rounded-lg shadow-lg h-full">
+          <table class=" w-full overflow-x-auto ">
+            <thead>
+              <tr
+                class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
+                <th class="px-4 py-1 text-center ">Name</th>
+                <th class="px-4 py-1 text-center ">bed </th>
+                <th class="px-4 py-1 text-center ">start</th>
+                <th class="px-4 py-1 text-center ">last</th>
               </tr>
             </thead>
             <tbody class="bg-white">
@@ -38,54 +73,57 @@
                 </td>
                 <td class="px-4 py-3 border text-sm">{{ currDataList[list.room_name]?.endPoint }}</td>
               </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-    <div class="w-full">
-      <div class="my-8 overflow-hidden rounded-lg shadow-lg">
-        <div class="w-full overflow-x-auto">
-          <table class="w-full">
-            <thead>
-              <tr
-                class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
-                <th class="px-4 py-3 text-center ">page </th>
-                <th class="px-4 py-3 text-center ">X축 최대 수 </th>
-                <th class="px-4 py-3 text-center " v-for="item in pageNumber">page {{ item }}</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white">
-              <tr class="text-gray-700">
+              <tr class="text-gray-700" v-for="list in itemList.data" :key="list">
                 <td class="px-4 py-3 border">
-                  <input class="w-full font-semibold text-center" type="number" pattern="[0-9]*" v-model="pageNumber" />
+                  <!-- <div class="flex items-center text-sm"> -->
+                  <!-- <div> -->
+                  <div class="font-semibold text-center">{{ convertToRoomNumber(list.room_name) }}</div>
+                  <!-- <p class="text-xs text-gray-600">Developer</p> -->
+                  <!-- </div> -->
+                  <!-- </div> -->
                 </td>
-                <td class="px-4 py-3 border text-md font-semibold text-center">
-                  <input class="w-full font-semibold text-center" v-model="xAxis" />
+                <td class="px-4 py-3 border text-md font-semibold text-center">{{ list.room_bedNum }}</td>
+                <td class="px-4 py-3 border text-xs">
+                  <input class="px-2 py-1 w-full font-semibold leading-tight rounded-sm"
+                    :value="currDataList[list.room_name]?.startPoint"
+                    @input="updateStartPoint(list.room_bedNum, list.room_name, $event.target.value)"
+                    :class="{ 'bg-green-100 text-green-700': currDataList[list.room_name]?.endPoint !== null, 'bg-red-100 text-red-700': currDataList[list.room_name]?.endPoint == null }">
                 </td>
-                <td class="px-4 py-3 border text-xs" v-for="pageIndex in pageNumber">
-                  <select id="underline_select" v-model="yAxis[pageIndex - 1]"
-                    class=" text-center block  w-full text-sm  ">
-                    <option value="3" selected>3</option>
-                    <option value="4" selected>4</option>
-                  </select>
-                </td>
+                <td class="px-4 py-3 border text-sm">{{ currDataList[list.room_name]?.endPoint }}</td>
               </tr>
             </tbody>
           </table>
         </div>
-      </div>
-      <div class="flex flex-auto w-full flex-wrap ">
-        <div v-for="columnIndex in pageNumber" :key="columnIndex" style="height: 30rem;"
-          :class="[pageNumber == 1 ? 'w-full' : 'w-3/6']">
-          <div class=" rounded-lg shadow-lg m-1 p-9 border border-gray-700" :style="gridStyle(columnIndex)">
-            <div v-for="(content, index) in getSubArray(columnIndex)" :key="content" :class="[`box-${content?.type}`]">
-              {{ convertToRoom(content?.name, content?.type, index) }} <span v-if="content?.type === 'bed'">- {{ index -
-                beforeIndex }}</span>
+      </section>
+      <div class=" sm:w-4/6  lg:w-5/6 py-4  overflow-auto">
+        <div class="flex flex-auto w-full flex-wrap h-full ">
+          <div v-for="columnIndex in pageNumber" :key="columnIndex"
+            :class="[pageNumber == 1 ? 'w-full' : 'w-3/6', pageNumber <= 2 ? 'h-full' : '']">
+            <div class="flex">
+              <div class="w-1/3 text-center" v-for=" index in Number(yAxis[columnIndex - 1])">
+                {{ numberToAlphabet(getColumnOfyAxis(columnIndex) - 1 + index) }}</div>
+            </div>
+            <div class=" rounded-lg shadow-lg mx-1  p-1 border border-gray-700  " :style="gridStyle(columnIndex)"
+              :class="[pageNumber <= 2 ? 'h-full' : '']">
+              <div class="flex  items-center justify-center border-black"
+                v-for="(content, index) in getSubArray(columnIndex)" :key="content" :class="[`box-${content?.type}`]">
+                {{ convertToRoom(content?.name, content?.type, index) }} <span v-if="content?.type === 'bed'">- {{ index -
+                  beforeIndex }}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+    <div class="w-full flex  justify-end p-4 " style="height: 10%;">
+      <button type="button"
+        class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+        저장
+      </button>
+      <button type="button"
+        class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+        취소
+      </button>
     </div>
   </div>
 </template>
@@ -122,14 +160,7 @@ const contents =
       { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "room", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, "", ""], [{ "type": "room", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, "", "", "", "", "", ""]]
     }
   ]
-const totalBedNum = computed(() => {
-  let total_yAxis = 0;
-  for (const item in yAxis.value) {
-    total_yAxis += yAxis.value[item];
-  }
 
-  return total_yAxis * xAxis.value;
-});
 
 function gridStyle(index) {
   const rowstyle = yAxis.value[index - 1] || 3
@@ -166,18 +197,18 @@ let currDataArray = reactive([])
 function getSubArray(currPage) {
   const curryAxis = yAxis.value[currPage - 1] * xAxis.value || 3 * xAxis.value
   if (currPage > 0) {
-    let sumPage = 0
-    for (let i = 1; i < currPage; i++) {
-      sumPage += Number(yAxis.value[i - 1])
-    }
-    console.log('yAxis.value :>> ', yAxis.value);
-    console.log(' currPage, sumPage, currPage :>> ', currPage, sumPage);
-    console.log('    sumPage * xAxis.value :>> ', sumPage * xAxis.value);
+    let sumPage = getColumnOfyAxis(currPage)
+    console.log('sumPage :>> ', sumPage);
     return currDataArray.slice(sumPage * xAxis.value, currPage * curryAxis);
   }
-  return currDataArray.slice(currPage * xAxis.value);
 }
-
+function getColumnOfyAxis(index) {
+  let sumPage = 0
+  for (let i = 1; i < Number(index); i++) {
+    sumPage += Number(yAxis.value[i - 1] || 3)
+  }
+  return sumPage
+}
 const currDataList = reactive({})
 function getContents(contents) {
   let size = 0
@@ -347,28 +378,21 @@ function addNumberToCell(roomBedNum, value) {
  */
 function updateStartPoint(roomBedNum, roomName, value) {
   deleteBedInList(roomName)
-
   const convertRoomNumber = addNumberToCell(roomBedNum, value);
+
   if (!convertRoomNumber) {
     console.error('Error: Invalid input');
-    currDataList[roomName].startPoint = value;
-    currDataList[roomName].endPoint = null;
-    return '';
+    currDataList[roomName].startPoint = value; currDataList[roomName].endPoint = null; return '';
   }
   if (!isEmptyBed(convertRoomNumber[1], convertRoomNumber[2])) {
     console.error('Error: is Not Empty Error');
-    currDataList[roomName].startPoint = value;
-    currDataList[roomName].endPoint = null;
-    return '';
+    currDataList[roomName].startPoint = value; currDataList[roomName].endPoint = null; return '';
   }
   if (!addBedInList(roomName, convertRoomNumber[1], convertRoomNumber[2])) {
     console.error('Error: add Error');
-    currDataList[roomName].startPoint = value;
-    currDataList[roomName].endPoint = null;
-    return '';
+    currDataList[roomName].startPoint = value; currDataList[roomName].endPoint = null; return '';
   }
-  currDataList[roomName].startPoint = addNumberToCell(0, value)[0];
-  currDataList[roomName].endPoint = convertRoomNumber[0];
+  currDataList[roomName].startPoint = addNumberToCell(0, value)[0]; currDataList[roomName].endPoint = convertRoomNumber[0];
 }
 
 /**
@@ -399,7 +423,6 @@ function isEmptyBed(startPoint, endPoint) {
   if (startPoint && endPoint) {
     const newArray = currDataArray.slice(startPoint, endPoint)
     for (const item of newArray) {
-      console.log('newArray :>> ', newArray);
       if (item != undefined) return false
     }
   }
@@ -409,19 +432,18 @@ function isEmptyBed(startPoint, endPoint) {
 const wardList = ["61병동", "63병동", "133병동", "81병동"]
 const selectWard = ref(null)
 
+
 watch((xAxis), () => {
   for (const item in currDataList) {
-    // const value = currDataList[item].endPoint
-    // if (value) {
-    //   const baseRegex = /^([a-zA-Z]+)([0-9]+)$/;
-    //   const [, baseAlpha, baseNum] = value?.match(baseRegex);
-    //   if (Number(xAxis.value) < Number(baseNum)) {
     deleteBedInList(item)
     currDataList[item].endPoint = null
     currDataList[item].startPoint = null
   }
-  // }
-  console.log('dwdwd :>> ');
+})
+watch((pageNumber), () => {
+  while (pageNumber.value > yAxis.value.length) {
+    yAxis.value.push(3)
+  }
 })
 onBeforeMount(() => {
   getContents(contents)
@@ -439,14 +461,19 @@ onBeforeMount(() => {
   color: #ffffff;
   border-radius: 5px;
   text-align: center;
-  margin: 3px;
+  margin: 0px 3px;
 }
 
 .box-bed {
-  border: 2px solid #000000;
   background-color: #F2F2F2;
   text-align: center;
+  margin: 0px 3px;
+}
+
+.box-undefined {
   border-radius: 5px;
-  margin: 3px;
+  min-height: 28px;
+  /* border: 1px solid #000000; */
+
 }
 </style>
