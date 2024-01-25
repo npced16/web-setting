@@ -1,67 +1,87 @@
 <template>
-  <div class="primary-frame">
-    <div class="primary-body">
-      <select class="ui-active:bg-blue-500 ui-active:text-white ui-not-active:bg-white ui-not-active:text-black"
-        v-model="selectWard">
+  <div class="flex ">
+    <section class="container w-2/6 mx-auto p-6 font-mono">
+      <select id="underline_select" v-model="selectWard"
+        class="mb-2 block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
         <option value="null" selected>병동 선택</option>
         <option v-for="ward in wardList" :value="ward" :key="ward">{{ ward }}</option>
       </select>
 
-      <div style=" display: flex;">
-        <div style=" height: 300px; ">
-          <section class="container mx-auto p-6 font-mono">
-            <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
-              <div class="w-full overflow-x-auto">
-                <table class=" w-full">
-                  <thead>
-                    <tr
-                      class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
-                      <th class="px-4 py-3 text-center min-w-32">병실 명 </th>
-                      <th class="px-4 py-3 text-center min-w-32">침상 수 </th>
-                      <th class="px-4 py-3 text-center min-w-32">시작 위치</th>
-                      <th class="px-4 py-3 text-center min-w-32">마지막 위치</th>
-                    </tr>
-                  </thead>
-                  <tbody class="bg-white">
-                    <tr class="text-gray-700" v-for="list in itemList.data" :key="list">
-                      <td class="px-4 py-3 border">
-                        <!-- <div class="flex items-center text-sm"> -->
-                        <!-- <div> -->
-                        <div class="font-semibold text-center">{{ convertToRoomNumber(list.room_name) }}</div>
-                        <!-- <p class="text-xs text-gray-600">Developer</p> -->
-                        <!-- </div> -->
-                        <!-- </div> -->
-                      </td>
-                      <td class="px-4 py-3 border text-md font-semibold text-center">{{ list.room_bedNum }}</td>
-                      <td class="px-4 py-3 border text-xs">
-                        <input class="px-2 py-1 font-semibold leading-tight rounded-sm"
-                          :value="currData[list.room_name]?.startPoint"
-                          @input="updateStartPoint(list.room_bedNum, list.room_name, $event.target.value)"
-                          :class="{ 'bg-green-100 text-green-700': currData[list.room_name]?.endPoint !== null, 'bg-red-100 text-red-700': currData[list.room_name]?.endPoint == null }">
-                      </td>
-                      <td class="px-4 py-3 border text-sm">{{ currData[list.room_name]?.endPoint }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </section>
+      <div class="mb-8 overflow-hidden rounded-lg shadow-lg">
+        <div class="w-full overflow-x-auto">
+          <table class=" w-full">
+            <thead>
+              <tr
+                class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
+                <th class="px-4 py-3 text-center ">병실 명 </th>
+                <th class="px-4 py-3 text-center ">침상 수 </th>
+                <th class="px-4 py-3 text-center ">시작 위치</th>
+                <th class="px-4 py-3 text-center ">마지막 위치</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white">
+              <tr class="text-gray-700" v-for="list in itemList.data" :key="list">
+                <td class="px-4 py-3 border">
+                  <!-- <div class="flex items-center text-sm"> -->
+                  <!-- <div> -->
+                  <div class="font-semibold text-center">{{ convertToRoomNumber(list.room_name) }}</div>
+                  <!-- <p class="text-xs text-gray-600">Developer</p> -->
+                  <!-- </div> -->
+                  <!-- </div> -->
+                </td>
+                <td class="px-4 py-3 border text-md font-semibold text-center">{{ list.room_bedNum }}</td>
+                <td class="px-4 py-3 border text-xs">
+                  <input class="px-2 py-1 w-full font-semibold leading-tight rounded-sm"
+                    :value="currDataList[list.room_name]?.startPoint"
+                    @input="updateStartPoint(list.room_bedNum, list.room_name, $event.target.value)"
+                    :class="{ 'bg-green-100 text-green-700': currDataList[list.room_name]?.endPoint !== null, 'bg-red-100 text-red-700': currDataList[list.room_name]?.endPoint == null }">
+                </td>
+                <td class="px-4 py-3 border text-sm">{{ currDataList[list.room_name]?.endPoint }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div class="w-full">
-          <div class="flex w-full">
-            <div class="box-room w-32">page수 : {{ pageNumber }}P</div>
-            <div class="box-room w-32">세로 최대 카드 수 : {{ xAxis }}</div>
-            <div v-for="pageIndex in pageNumber" :key="pageIndex" class="box-room w-32">
-              Page {{ pageIndex }} : {{ yAxis[pageIndex - 1] }}
-            </div>
-          </div>
-
-          <div class="flex flex-auto w-full  flex-wrap">
-            <div v-for="columnIndex in pageNumber" :key="columnIndex" class="w-6/12" :style="gridStyle(columnIndex)">
-              <div v-for="(content, index) in getSubArray(columnIndex)" :key="content" :class="[`box-${content?.type}`]">
-                {{ convertToRoom(content?.name, content?.type, index) }}
-                <span v-if="content?.type === 'bed'">- {{ index - beforeIndex }}</span>
-              </div>
+      </div>
+    </section>
+    <div class="w-full">
+      <div class="my-8 overflow-hidden rounded-lg shadow-lg">
+        <div class="w-full overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr
+                class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
+                <th class="px-4 py-3 text-center ">page </th>
+                <th class="px-4 py-3 text-center ">X축 최대 수 </th>
+                <th class="px-4 py-3 text-center " v-for="item in pageNumber">page {{ item }}</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white">
+              <tr class="text-gray-700">
+                <td class="px-4 py-3 border">
+                  <input class="w-full font-semibold text-center" type="number" pattern="[0-9]*" v-model="pageNumber" />
+                </td>
+                <td class="px-4 py-3 border text-md font-semibold text-center">
+                  <input class="w-full font-semibold text-center" v-model="xAxis" />
+                </td>
+                <td class="px-4 py-3 border text-xs" v-for="pageIndex in pageNumber">
+                  <select id="underline_select" v-model="yAxis[pageIndex - 1]"
+                    class=" text-center block  w-full text-sm  ">
+                    <option value="3" selected>3</option>
+                    <option value="4" selected>4</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="flex flex-auto w-full flex-wrap ">
+        <div v-for="columnIndex in pageNumber" :key="columnIndex" style="height: 30rem;"
+          :class="[pageNumber == 1 ? 'w-full' : 'w-3/6']">
+          <div class=" rounded-lg shadow-lg m-1 p-9 border border-gray-700" :style="gridStyle(columnIndex)">
+            <div v-for="(content, index) in getSubArray(columnIndex)" :key="content" :class="[`box-${content?.type}`]">
+              {{ convertToRoom(content?.name, content?.type, index) }} <span v-if="content?.type === 'bed'">- {{ index -
+                beforeIndex }}</span>
             </div>
           </div>
         </div>
@@ -70,10 +90,10 @@
   </div>
 </template>
 <script setup>
-import { ref, onBeforeMount, reactive, computed } from 'vue';
-const yAxis = ref([3, 3])
+import { ref, onBeforeMount, reactive, computed, watch } from 'vue';
+const yAxis = ref([3, 3, 3, 3])
 const xAxis = ref(12)
-const pageNumber = ref(2)
+const pageNumber = ref(Number(4))
 
 const contents =
   [
@@ -102,12 +122,14 @@ const contents =
       { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "room", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, "", ""], [{ "type": "room", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, "", "", "", "", "", ""]]
     }
   ]
-// const gridStyle = computed(() => ({
-//   display: 'grid',
-//   gridAutoFlow: 'column',// 열 방향으로 그리드 아이템 나열
-//   gridTemplateRows: `repeat(${xAxis.value}, 1fr)`,
-//   gridTemplateColumns: `repeat(${yAxis.value}, 1fr)`
-// }));
+const totalBedNum = computed(() => {
+  let total_yAxis = 0;
+  for (const item in yAxis.value) {
+    total_yAxis += yAxis.value[item];
+  }
+
+  return total_yAxis * xAxis.value;
+});
 
 function gridStyle(index) {
   const rowstyle = yAxis.value[index - 1] || 3
@@ -116,7 +138,6 @@ function gridStyle(index) {
     gridAutoFlow: 'column',// 열 방향으로 그리드 아이템 나열
     gridTemplateRows: `repeat(${xAxis.value}, 1fr)`,
     gridTemplateColumns: `repeat(${rowstyle}, 1fr)`,
-    border: `5px solid #1fF211`,
     padding: '4px',
     borderRadius: "15px"
   }
@@ -144,11 +165,20 @@ function getCreatedPageData() {
 let currDataArray = reactive([])
 function getSubArray(currPage) {
   const curryAxis = yAxis.value[currPage - 1] * xAxis.value || 3 * xAxis.value
-  if (currPage > 0) { return currDataArray.slice((currPage - 1) * curryAxis, currPage * curryAxis); }
-  return currDataArray.slice(currPage * curryAxis);
+  if (currPage > 0) {
+    let sumPage = 0
+    for (let i = 1; i < currPage; i++) {
+      sumPage += Number(yAxis.value[i - 1])
+    }
+    console.log('yAxis.value :>> ', yAxis.value);
+    console.log(' currPage, sumPage, currPage :>> ', currPage, sumPage);
+    console.log('    sumPage * xAxis.value :>> ', sumPage * xAxis.value);
+    return currDataArray.slice(sumPage * xAxis.value, currPage * curryAxis);
+  }
+  return currDataArray.slice(currPage * xAxis.value);
 }
 
-const currData = reactive({})
+const currDataList = reactive({})
 function getContents(contents) {
   let size = 0
   let currDataIndex = 0
@@ -158,27 +188,27 @@ function getContents(contents) {
       for (const data of content.col[item]) {
         ++count
         if (data.type == 'room') {
-          if (!currData[data.name]) {
-            currData[data.name] = {
+          if (!currDataList[data.name]) {
+            currDataList[data.name] = {
               startPoint: numberToAlphabet(parseInt(item) + size) + count,
               start: currDataIndex,
               end: 0,
               endPoint: null
             }
             currDataArray[currDataIndex] = { type: 'room', name: data.name }
-            if (!currData?.table) {
-              currData.table = {};
+            if (!currDataList?.table) {
+              currDataList.table = {};
             }
-            if (!currData.table[item]) {
-              currData.table[item] = [data.name];
+            if (!currDataList.table[item]) {
+              currDataList.table[item] = [data.name];
             } else {
-              currData.table[item].push(data.name); ``
+              currDataList.table[item].push(data.name); ``
             }
           }
         }
         if (data.type == 'bed') {
-          currData[data.name].endPoint = numberToAlphabet(parseInt(item) + size) + count
-          currData[data.name].end = currDataIndex
+          currDataList[data.name].endPoint = numberToAlphabet(parseInt(item) + size) + count
+          currDataList[data.name].end = currDataIndex
           currDataArray[currDataIndex] = { type: 'bed', name: data.name }
         }
         currDataIndex++
@@ -195,8 +225,8 @@ function numberToAlphabet(number) {
 
 function settingContents() {
   for (const list of itemList.value.data) {
-    if (!currData[list.room_name] && list.room_name) {
-      currData[list.room_name] = {
+    if (!currDataList[list.room_name] && list.room_name) {
+      currDataList[list.room_name] = {
         startPoint: '',
         endPoint: null
       }
@@ -211,7 +241,7 @@ const itemList = ref({
     "_id": "65a48e674a64efd1ca01c37d",
     "room_name": "3", "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "5", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
   }, {
-    "room_name": "19", "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "2", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
+    "room_name": "19", "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "11", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
   },
   {
     "_id": "65a48e674a64efd1ca01c37f", "room_name": "6", "ward_name": "63병동",
@@ -299,7 +329,6 @@ function addNumberToCell(roomBedNum, value) {
 
   // 결과 숫자 계산
   const resultNum = Number(baseNum) + Number(roomBedNum);
-
   // 결과 숫자가 범위를 초과하면 false 반환
   if (resultNum > xAxis.value) {
     return false;
@@ -317,32 +346,29 @@ function addNumberToCell(roomBedNum, value) {
  * @param {*} value 입력값
  */
 function updateStartPoint(roomBedNum, roomName, value) {
-  console.log('value :>> ', roomBedNum, roomName, value);
   deleteBedInList(roomName)
-  // console.log('  :>> ', addBedInList(10, 12, 24,));
 
   const convertRoomNumber = addNumberToCell(roomBedNum, value);
   if (!convertRoomNumber) {
     console.error('Error: Invalid input');
-    currData[roomName].startPoint = value;
-    currData[roomName].endPoint = null;
+    currDataList[roomName].startPoint = value;
+    currDataList[roomName].endPoint = null;
     return '';
   }
   if (!isEmptyBed(convertRoomNumber[1], convertRoomNumber[2])) {
-    console.error('Error: add Error');
-    currData[roomName].startPoint = value;
-    currData[roomName].endPoint = null;
+    console.error('Error: is Not Empty Error');
+    currDataList[roomName].startPoint = value;
+    currDataList[roomName].endPoint = null;
     return '';
   }
   if (!addBedInList(roomName, convertRoomNumber[1], convertRoomNumber[2])) {
     console.error('Error: add Error');
-    currData[roomName].startPoint = value;
-    currData[roomName].endPoint = null;
+    currDataList[roomName].startPoint = value;
+    currDataList[roomName].endPoint = null;
     return '';
   }
-  currData[roomName].startPoint = addNumberToCell(0, value)[0];
-  currData[roomName].endPoint = convertRoomNumber[0];
-
+  currDataList[roomName].startPoint = addNumberToCell(0, value)[0];
+  currDataList[roomName].endPoint = convertRoomNumber[0];
 }
 
 /**
@@ -350,13 +376,11 @@ function updateStartPoint(roomBedNum, roomName, value) {
  * @param {*} roomName 병실 이름 
  */
 function deleteBedInList(roomName) {
-
   for (const item in currDataArray) {
     if (parseInt(currDataArray[item]?.name) == roomName) {
       delete currDataArray[item]
     }
   }
-  console.log('nexIntDataArray :>> ', currDataArray);
 }
 function addBedInList(roomBedNum, startPoint, endPoint) {
   if (isEmptyBed(startPoint - 1, endPoint)) {
@@ -367,7 +391,6 @@ function addBedInList(roomBedNum, startPoint, endPoint) {
       } else
         currDataArray[i] = { type: 'bed', name: roomBedNum }
     }
-    console.log('nexIntDataArray :>> ', currDataArray);
     return true
   }
   return false
@@ -386,11 +409,24 @@ function isEmptyBed(startPoint, endPoint) {
 const wardList = ["61병동", "63병동", "133병동", "81병동"]
 const selectWard = ref(null)
 
+watch((xAxis), () => {
+  for (const item in currDataList) {
+    // const value = currDataList[item].endPoint
+    // if (value) {
+    //   const baseRegex = /^([a-zA-Z]+)([0-9]+)$/;
+    //   const [, baseAlpha, baseNum] = value?.match(baseRegex);
+    //   if (Number(xAxis.value) < Number(baseNum)) {
+    deleteBedInList(item)
+    currDataList[item].endPoint = null
+    currDataList[item].startPoint = null
+  }
+  // }
+  console.log('dwdwd :>> ');
+})
 onBeforeMount(() => {
   getContents(contents)
   settingContents()
   getCreatedPageData()
-
 })
 
 
@@ -403,9 +439,7 @@ onBeforeMount(() => {
   color: #ffffff;
   border-radius: 5px;
   text-align: center;
-  min-width: 60px;
   margin: 3px;
-  padding: 1px;
 }
 
 .box-bed {
@@ -414,12 +448,5 @@ onBeforeMount(() => {
   text-align: center;
   border-radius: 5px;
   margin: 3px;
-  padding: 1px;
-  min-width: 60px;
-
-}
-
-.draggable {
-  cursor: move;
 }
 </style>
