@@ -129,7 +129,7 @@
 </template>
 <script setup>
 import { ref, onBeforeMount, reactive, computed, watch } from 'vue';
-const yAxis = ref([3, 3, 3, 3])
+const yAxis = reactive([3, 3, 3, 3])
 const xAxis = ref(12)
 const pageNumber = ref(Number(4))
 
@@ -163,7 +163,7 @@ const contents =
 
 
 function gridStyle(index) {
-  const rowstyle = yAxis.value[index - 1] || 3
+  const rowstyle = yAxis[index - 1] || 3
   const style = {
     display: 'grid',
     gridAutoFlow: 'column',// 열 방향으로 그리드 아이템 나열
@@ -178,7 +178,7 @@ function getCreatedPageData() {
   const newData = [];
   let count = 0
   for (let i = 0; i < pageNumber.value; i++) {
-    const yLength = yAxis.value[i];
+    const yLength = yAxis[i];
     const page = { size: yLength, col: [] };
     for (let range = 0; range < yLength; range++) {
       const col = [];
@@ -195,17 +195,14 @@ function getCreatedPageData() {
 
 let currDataArray = reactive([])
 function getSubArray(currPage) {
-  const curryAxis = yAxis.value[currPage - 1] * xAxis.value || 3 * xAxis.value
-  if (currPage > 0) {
-    let sumPage = getColumnOfyAxis(currPage)
-    console.log('sumPage :>> ', sumPage);
-    return currDataArray.slice(sumPage * xAxis.value, currPage * curryAxis);
-  }
+  let sumPage = getColumnOfyAxis(currPage)
+  let nextPage = getColumnOfyAxis(currPage + 1)
+  return currDataArray.slice(sumPage * xAxis.value, nextPage * xAxis.value);
 }
 function getColumnOfyAxis(index) {
   let sumPage = 0
   for (let i = 1; i < Number(index); i++) {
-    sumPage += Number(yAxis.value[i - 1] || 3)
+    sumPage += Number(yAxis[i - 1] || 3)
   }
   return sumPage
 }
@@ -441,9 +438,12 @@ watch((xAxis), () => {
   }
 })
 watch((pageNumber), () => {
-  while (pageNumber.value > yAxis.value.length) {
-    yAxis.value.push(3)
+  while (pageNumber.value > yAxis.length) {
+    yAxis.push(3)
   }
+})
+watch((yAxis), () => {
+  console.log('yAxis :>> ', yAxis);
 })
 onBeforeMount(() => {
   getContents(contents)

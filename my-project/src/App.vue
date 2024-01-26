@@ -1,7 +1,6 @@
 <script setup>
 import TitleVue from '@/components/title.vue';
 import ThePageSettingView from '@/components/ThePageSettingView.vue'
-import TableVue from '@/components/table.vue';
 import loginView from '@/components/loginView.vue'
 </script>
 <template>
