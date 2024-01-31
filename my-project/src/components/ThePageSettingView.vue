@@ -103,11 +103,22 @@
                 <td class="px-4 py-3 border text-xs">
                   <input class="px-2 py-1 w-full font-semibold leading-tight rounded-sm"
                     :value="currDataList[list.room_name]?.startPoint"
-                    @input="updateStartPoint(list.room_bedNum, list.room_name, $event.target.value)"
-                    @blur="erromessage = null"
-                    :class="{ 'bg-green-100 text-green-700': currDataList[list.room_name]?.endPoint !== null, 'bg-red-100 text-red-700': currDataList[list.room_name]?.endPoint == null }">
+                    @input="updatePoint(list.room_bedNum, list.room_name, $event.target.value)" @blur="erromessage = null"
+                    :class="{
+                      'bg-green-100 text-green-700': currDataList[list.room_name]?.startPoint !== null && currDataList[list.room_name]?.endPoint !== null,
+                      'bg-red-100 text-red-700': currDataList[list.room_name]?.startPoint == null || currDataList[list.room_name]?.endPoint == null,
+                    }">
                 </td>
-                <td class="px-4 py-3 border text-sm">{{ currDataList[list.room_name]?.endPoint }}</td>
+                <td class="px-4 py-3 border text-sm">
+                  <input class="px-2 py-1 w-full font-semibold leading-tight rounded-sm"
+                    :value="currDataList[list.room_name]?.endPoint"
+                    @input="updatePoint(list.room_bedNum, list.room_name, $event.target.value, 'end')"
+                    @blur="erromessage = null" :class="{
+                      'bg-green-100 text-green-700': currDataList[list.room_name]?.startPoint !== null && currDataList[list.room_name]?.endPoint !== null,
+                      'bg-red-100 text-red-700': currDataList[list.room_name]?.startPoint == null || currDataList[list.room_name]?.endPoint == null,
+                    }">
+                  <!-- {{ currDataList[list.room_name]?.endPoint }} -->
+                </td>
               </tr>
             </tbody>
           </table>
@@ -139,9 +150,12 @@
               <div
                 v-for="(content, index) in getLengthByPageNumber(columnIndex) - getArrayByPageNumber(columnIndex).length"
                 class="h-full w-full text-center text-gray-300 ">
-                {{ numberToAlphabet(getStartColumnForPageIndex(columnIndex) + parseInt(index / 12)) }}{{ index % xAxis
-                  +
-                  1 }}
+                {{ numberToAlphabet(
+                  getStartColumnForPageIndex(columnIndex) + parseInt((getArrayByPageNumber(columnIndex).length + index)
+                    / 12)) }}
+                {{
+                  (getArrayByPageNumber(columnIndex).length + index) % xAxis + 1 }}
+                <!-- {{ getArrayByPageNumber(columnIndex).length + index }} -->
               </div>
             </div>
           </div>
@@ -327,7 +341,7 @@ function settingContents() {
   for (const list of itemList.value.data) {
     if (!currDataList[list.room_name] && list.room_name) {
       currDataList[list.room_name] = {
-        startPoint: '',
+        startPoint: null,
         endPoint: null
       }
     }
@@ -405,7 +419,7 @@ function convertToRoomNumber(roomNumber) {
  * @returns {(Array|boolean)} - 계산된 데이터값과 범위의 시작 및 끝을 포함하는 배열
  *                            (예: ['A3', 5, 7,true]) 또는 false (입력 오류 시)
  */
-function addNumberToCell(roomBedNum, value) {
+function addNumberToCell(roomBedNum, value, pointName) {
   const baseRegex = /^([a-zA-Z]{1,2})([0-9]+)$/;
   // 입력값이 없거나 정규식과 매치되지 않으면 false 반환
   if (!value || value.match(baseRegex) === null) {
@@ -419,7 +433,8 @@ function addNumberToCell(roomBedNum, value) {
   const upperAlpha = baseAlpha.toUpperCase();
   // 현재 데이터 숫자 계산
   let currDataNumber
-  //  AA 같은 형식 구현
+  let resultNum = Number(baseNum) + Number(roomBedNum);
+
   if (upperAlpha.charCodeAt(1)) {
     currDataNumber = ((upperAlpha.charCodeAt(0) - 'A'.charCodeAt(0) + 1) * 26 * xAxis.value) +
       ((upperAlpha.charCodeAt(1) - 'A'.charCodeAt(0)) * xAxis.value + Number(baseNum));
@@ -427,10 +442,28 @@ function addNumberToCell(roomBedNum, value) {
     currDataNumber = (upperAlpha.charCodeAt(0) - 'A'.charCodeAt(0)) * xAxis.value + Number(baseNum);
   }
   // 결과 숫자 계산
-  const resultNum = Number(baseNum) + Number(roomBedNum);
 
+  if (pointName) {
+    resultNum = Number(baseNum) - Number(roomBedNum);
+
+    return {
+      startString: `${upperAlpha}${resultNum}`,
+      endString: `${upperAlpha}${baseNum}`,
+      start: currDataNumber - Number(roomBedNum),
+      end: currDataNumber,
+      overFlow: baseNum > xAxis.value || resultNum < 1,
+    };
+  }
   // 결과값과 범위의 시작과 끝을 배열로 반환
-  return [`${upperAlpha}${resultNum}`, currDataNumber, currDataNumber + Number(roomBedNum), resultNum > xAxis.value,];
+  return {
+    startString: `${upperAlpha}${baseNum}`,
+    endString: `${upperAlpha}${resultNum}`,
+    start: currDataNumber,
+    end: currDataNumber + Number(roomBedNum),
+    overFlow: resultNum > xAxis.value,
+  };
+
+  // [`${upperAlpha}${resultNum}`, currDataNumber, currDataNumber + Number(roomBedNum), resultNum > xAxis.value, `${upperAlpha}${baseNum}`];
 }
 
 
@@ -439,42 +472,56 @@ function addNumberToCell(roomBedNum, value) {
  * @param {*} roomBedNum 침상 수
  * @param {*} roomName 병실 이름
  * @param {*} value 입력값
+ * @param {*} pointName Null || 'end' -어떤 포인트에 대한 작업인지를 알려는 것   
  */
-function updateStartPoint(roomBedNum, roomName, value) {
+function updatePoint(roomBedNum, roomName, value, pointName) {
   deleteBedInList(roomName)
-  const convertRoomNumber = addNumberToCell(roomBedNum, value);
-  if (!isEmptyBed(convertRoomNumber[1], convertRoomNumber[2])) {
+  const convertRoomNumber = addNumberToCell(roomBedNum, value, pointName);
+  if (!isEmptyBed(convertRoomNumber.start, convertRoomNumber.end)) {
     erromessage.value = '다른 값이 이미 들어가 있습니다.'
-    return resetEndpoints(roomName, value)
+    return resetPoints(roomName, value, pointName)
   }
   if (!convertRoomNumber) {
     erromessage.value = '시작점 입력이 잘못되었습니다.'
-    return resetEndpoints(roomName, value)
+    return resetPoints(roomName, value, pointName)
   }
-  if (convertRoomNumber[3]) {
+  if (convertRoomNumber.overFlow) {
     erromessage.value = '침상 수가 범위를 벗어납니다.'
-    return resetEndpoints(roomName, value)
+    return resetPoints(roomName, value, pointName)
   }
   let beforeStartIndex = null
   let beforeEndIndex = null
   let currCurrIndex = 0
-  for (let i = 0; currCurrIndex < convertRoomNumber[1]; i++) {
+  for (let i = 0; currCurrIndex < convertRoomNumber.start; i++) {
     beforeStartIndex = beforeEndIndex
     beforeEndIndex = currCurrIndex
     currCurrIndex = getStartColumnForPageIndex(i) * xAxis.value
   }
   if (isEmptyBed(beforeStartIndex, beforeEndIndex)) {
     erromessage.value = '이전 페이지가 비어있음';
-    return resetEndpoints(roomName, value)
+    return resetPoints(roomName, value, pointName)
   }
-  addBedInList(roomName, convertRoomNumber[1], convertRoomNumber[2])
+  console.log('object :>> ', convertRoomNumber);
+  addBedInList(roomName, convertRoomNumber.start, convertRoomNumber.end)
   erromessage.value = null
-  currDataList[roomName].startPoint = addNumberToCell(0, value)[0]; currDataList[roomName].endPoint = convertRoomNumber[0];
+
+
+  currDataList[roomName].startPoint = convertRoomNumber.startString;
+  currDataList[roomName].endPoint = convertRoomNumber.endString;
+
+
 }
 
-function resetEndpoints(roomName, value) {
-  currDataList[roomName].startPoint = value;
-  currDataList[roomName].endPoint = null;
+
+function resetPoints(roomName, value, flag) {
+  if (flag) {
+    currDataList[roomName].startPoint = null;
+    currDataList[roomName].endPoint = value;
+  } else {
+    currDataList[roomName].startPoint = value;
+    currDataList[roomName].endPoint = null;
+  }
+
 }
 /**
  * 주어진 RoomName 에 따라 데이터를 지움
@@ -526,7 +573,7 @@ onBeforeMount(() => {
 
 <style >
 .box-room {
-  border: 2px solid #000000;
+  border: 1px solid #000000;
   background-color: #7F7F7F;
   color: #ffffff;
   border-radius: 5px;
