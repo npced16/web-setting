@@ -19,13 +19,13 @@
               leave-to-class="opacity-0">
               <ListboxOptions
                 class="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                <ListboxOption as="template" v-for="person in wardList" :key="person" :value="person"
+                <ListboxOption as="template" v-for="ward in wardList" :key="ward" :value="ward"
                   v-slot="{ active, selected }">
                   <li
                     :class="[active ? 'bg-indigo-600 text-white' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
                     <div class="flex items-center">
                       <span :class="[selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate']">
-                        {{ person }}
+                        {{ ward }}
                       </span>
                     </div>
                     <span v-if="selected"
@@ -56,8 +56,8 @@
                   <input class="w-full font-semibold text-center " type="number" pattern="[0-9]*" v-model="pageNumber" />
                 </td>
                 <td class=" border text-md font-semibold text-center w-80   ">
-                  <input class="font-semibold text-center" v-model="xAxis" />
-                  <button class="border rounded-sl  border-blue-500 ">적용</button>
+                  <input class="font-semibold text-center" v-model="tempXData" />
+                  <button class="border rounded-sl  border-blue-500 " @click="chageXaxis">적용</button>
                 </td>
                 <td class=" border text-xs" v-for="pageIndex in pageNumber">
                   <input class="w-full font-semibold text-center " type="number" pattern="[0-9]*"
@@ -117,11 +117,11 @@
         <div class="flex flex-auto w-full flex-wrap h-full  " style="max-height: 95%;">
           <div v-for="columnIndex in pageNumber" :key="columnIndex"
             :class="[pageNumber == 1 ? 'w-full' : 'w-3/6', pageNumber <= 2 ? 'h-full' : '']">
-            <div class="flex">
+            <!-- <div class="flex">
               <div class="w-1/3 text-center" v-for=" index in Number(yAxis[columnIndex - 1])">
                 {{ numberToAlphabet(getStartColumnForPageIndex(columnIndex) - 1 + index) }}
               </div>
-            </div>
+            </div> -->
             <div class="rounded-lg shadow-lg mx-1  p-1 border border-gray-700  " :style="gridStyle(columnIndex)"
               :class="[pageNumber <= 2 ? 'h-full' : '']">
               <div class="flex  items-center justify-center border-black "
@@ -129,7 +129,7 @@
                 :class="[`box-${content?.type}`]">
                 {{ convertToRoom(content?.name, content?.type, index) }}
                 <span v-if="content?.type === 'bed'">- {{ index - beforeIndex }}</span>
-                <span v-if="content == null">
+                <span v-if="content == null" class=" text-gray-300">
                   {{ numberToAlphabet(getStartColumnForPageIndex(columnIndex) + parseInt(index / 12)) }} {{ index % xAxis
                     +
                     1 }}
@@ -138,7 +138,7 @@
               </div>
               <div
                 v-for="(content, index) in getLengthByPageNumber(columnIndex) - getArrayByPageNumber(columnIndex).length"
-                class="h-full w-full text-center ">
+                class="h-full w-full text-center text-gray-300 ">
                 {{ numberToAlphabet(getStartColumnForPageIndex(columnIndex) + parseInt(index / 12)) }}{{ index % xAxis
                   +
                   1 }}
@@ -181,8 +181,17 @@ import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } f
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
 const yAxis = reactive([3, 3, 3, 3])
 const xAxis = ref(12)
+const tempXData = ref(xAxis.value)
 const pageNumber = ref(Number(4))
 const erromessage = ref(null)
+function chageXaxis() {
+  xAxis.value = tempXData.value
+  for (const item in currDataList) {
+    deleteBedInList(item)
+    currDataList[item].endPoint = null
+    currDataList[item].startPoint = null
+  }
+}
 
 const contents =
   [
@@ -397,7 +406,7 @@ function convertToRoomNumber(roomNumber) {
  *                            (예: ['A3', 5, 7,true]) 또는 false (입력 오류 시)
  */
 function addNumberToCell(roomBedNum, value) {
-  const baseRegex = /^([a-zA-Z]+)([0-9]+)$/;
+  const baseRegex = /^([a-zA-Z]{1,2})([0-9]+)$/;
   // 입력값이 없거나 정규식과 매치되지 않으면 false 반환
   if (!value || value.match(baseRegex) === null) {
     return false;
@@ -409,7 +418,14 @@ function addNumberToCell(roomBedNum, value) {
   }
   const upperAlpha = baseAlpha.toUpperCase();
   // 현재 데이터 숫자 계산
-  const currDataNumber = (upperAlpha.charCodeAt(0) - 'A'.charCodeAt(0)) * xAxis.value + Number(baseNum);
+  let currDataNumber
+  //  AA 같은 형식 구현
+  if (upperAlpha.charCodeAt(1)) {
+    currDataNumber = ((upperAlpha.charCodeAt(0) - 'A'.charCodeAt(0) + 1) * 26 * xAxis.value) +
+      ((upperAlpha.charCodeAt(1) - 'A'.charCodeAt(0)) * xAxis.value + Number(baseNum));
+  } else {
+    currDataNumber = (upperAlpha.charCodeAt(0) - 'A'.charCodeAt(0)) * xAxis.value + Number(baseNum);
+  }
   // 결과 숫자 계산
   const resultNum = Number(baseNum) + Number(roomBedNum);
 
@@ -482,7 +498,6 @@ function addBedInList(roomBedNum, startPoint, endPoint) {
 function isEmptyBed(startPoint, endPoint) {
   if (startPoint && endPoint) {
     const newArray = currDataArray.slice(startPoint, endPoint)
-    console.log('newArray. :>> ', newArray.length);
     for (const item of newArray) {
       if (item != undefined) return false
     }
@@ -494,13 +509,6 @@ const wardList = ["61병동", "63병동", "133병동", "81병동"]
 const selectWard = ref(wardList[0])
 
 
-watch((xAxis), () => {
-  for (const item in currDataList) {
-    // deleteBedInList(item)
-    // currDataList[item].endPoint = null
-    // currDataList[item].startPoint = null
-  }
-})
 watch((pageNumber), () => {
   while (pageNumber.value > yAxis.length) {
     yAxis.push(3)
