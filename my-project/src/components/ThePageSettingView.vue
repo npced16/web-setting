@@ -45,25 +45,29 @@
             <thead>
               <tr
                 class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
-                <th class="text-center ">page 페이지 수 </th>
-                <th class="text-center ">row number </th>
+                <th class="text-center w-80">page 페이지 수 </th>
+                <th class="text-center w-80 ">row number </th>
                 <th class="text-center " v-for="item in pageNumber">{{ item }}</th>
               </tr>
             </thead>
             <tbody class="bg-white">
               <tr class="text-gray-700">
                 <td class=" border">
-                  <input class="w-full font-semibold text-center" type="number" pattern="[0-9]*" v-model="pageNumber" />
+                  <input class="w-full font-semibold text-center " type="number" pattern="[0-9]*" v-model="pageNumber" />
                 </td>
-                <td class=" border text-md font-semibold text-center">
-                  <input class="w-full font-semibold text-center" v-model="xAxis" />
+                <td class=" border text-md font-semibold text-center w-80   ">
+                  <input class="font-semibold text-center" v-model="xAxis" />
+                  <button class="border rounded-sl  border-blue-500 ">적용</button>
                 </td>
                 <td class=" border text-xs" v-for="pageIndex in pageNumber">
-                  <select id="underline_select" v-model="yAxis[pageIndex - 1]"
+                  <input class="w-full font-semibold text-center " type="number" pattern="[0-9]*"
+                    v-model="yAxis[pageIndex - 1]" @input="validateInput(pageIndex - 1)" />
+
+                  <!-- <select id="underline_select" v-model="yAxis[pageIndex - 1]"
                     class=" text-center block  w-full text-sm  ">
                     <option value="3" selected>3</option>
                     <option value="4" selected>4</option>
-                  </select>
+                  </select> -->
                 </td>
               </tr>
             </tbody>
@@ -123,13 +127,23 @@
               <div class="flex  items-center justify-center border-black "
                 v-for="(content, index) in getArrayByPageNumber(columnIndex)" :key="content"
                 :class="[`box-${content?.type}`]">
-                {{ convertToRoom(content?.name, content?.type, index) }} <span v-if="content?.type === 'bed'">- {{ index -
-                  beforeIndex }}</span>
+                {{ convertToRoom(content?.name, content?.type, index) }}
+                <span v-if="content?.type === 'bed'">- {{ index - beforeIndex }}</span>
+                <span v-if="content == null">
+                  {{ numberToAlphabet(getStartColumnForPageIndex(columnIndex) + parseInt(index / 12)) }} {{ index % xAxis
+                    +
+                    1 }}
+                </span>
+
               </div>
-              <div v-if="getArrayByPageNumber(columnIndex) == 0" class="h-full w-full text-center text-white"> empty</div>
-
+              <div
+                v-for="(content, index) in getLengthByPageNumber(columnIndex) - getArrayByPageNumber(columnIndex).length"
+                class="h-full w-full text-center ">
+                {{ numberToAlphabet(getStartColumnForPageIndex(columnIndex) + parseInt(index / 12)) }}{{ index % xAxis
+                  +
+                  1 }}
+              </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -197,8 +211,14 @@ const contents =
       { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "room", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, "", ""], [{ "type": "room", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, "", "", "", "", "", ""]]
     }
   ]
-
-
+function validateInput(index) {
+  const inputValue = yAxis[index];
+  if (inputValue < 1) {
+    yAxis[index] = 1;
+  } else if (inputValue > 10) {
+    yAxis[index] = 10;
+  }
+};
 function gridStyle(index) {
   const rowstyle = yAxis[index - 1] || 3
   const style = {
@@ -221,7 +241,13 @@ let currDataArray = reactive([])
  * @returns  {(Array)}  페이지에 해당하는 데이터 배열
  */
 function getArrayByPageNumber(pageIndex) {
+
   return currDataArray.slice(getStartColumnForPageIndex(pageIndex) * xAxis.value, getStartColumnForPageIndex(pageIndex + 1) * xAxis.value);
+}
+
+
+function getLengthByPageNumber(pageIndex) {
+  return ((getStartColumnForPageIndex(pageIndex + 1) * xAxis.value) - (getStartColumnForPageIndex(pageIndex) * xAxis.value))
 }
 /**
  * index 에 따라 현재 page의 시작 열을 반환
@@ -280,6 +306,11 @@ function getContents(contents) {
 
 
 function numberToAlphabet(number) {
+  if (parseInt(number) >= 26) {
+    let fristString = String.fromCodePoint(parseInt((number) / 26 - 1) + 65)
+    let last = String.fromCodePoint(parseInt(number) % 26 + 65)
+    return fristString + last
+  }
   return String.fromCodePoint(parseInt(number) + 65)
 }
 
@@ -465,9 +496,9 @@ const selectWard = ref(wardList[0])
 
 watch((xAxis), () => {
   for (const item in currDataList) {
-    deleteBedInList(item)
-    currDataList[item].endPoint = null
-    currDataList[item].startPoint = null
+    // deleteBedInList(item)
+    // currDataList[item].endPoint = null
+    // currDataList[item].startPoint = null
   }
 })
 watch((pageNumber), () => {
