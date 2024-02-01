@@ -1,10 +1,10 @@
 <template>
   <div class="">
-    <div class="flex gap-6 px-4 py-2 " style="height: 10%;">
+    <div class="flex gap-6 px-4 py-2 h-[80px] ">
       <div class="sm:w-2/6  lg:w-1/6 ">
         <!-- <div class="bounce"></div> -->
         <Listbox as="div" v-model="selectWard">
-          <ListboxLabel class="block text-sm font-medium leading-6 text-gray-900">병동 선택해주세요</ListboxLabel>
+          <ListboxLabel class="block text-sm font-medium leading-6 text-gray-900">병동 </ListboxLabel>
           <div class="relative mt-2">
             <ListboxButton
               class="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 sm:text-sm sm:leading-6">
@@ -40,112 +40,101 @@
         </Listbox>
       </div>
       <div class="sm:w-4/6  lg:w-5/6 ">
-        <div class="m-4">
-          <table class="w-full">
-            <thead>
-              <tr
-                class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
-                <th class="text-center w-80">전체 페이지 수 </th>
-                <th class="text-center w-80 ">세로 최대 카드 수 </th>
-                <th class="text-center" :colspan="pageNumber">페이지 별 가로 길이</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white">
-              <tr class="text-gray-700">
-                <td class=" border">
-                  <input class="w-full font-semibold text-center " type="number" pattern="[0-9]*" v-model="pageNumber" />
-                </td>
-                <td class=" border text-md font-semibold text-center w-80   ">
-                  <input class="font-semibold text-center" v-model="tempXData" />
-                  <button class="border rounded-sl  border-blue-500 " @click="chageXaxis">적용</button>
-                </td>
-                <td class="border text-xs  p-0" v-for="pageIndex in pageNumber">
+        <table class="w-full border  rounded-xl   shadow-md ">
+          <thead>
+            <tr class="text-md font-semibold tracking-wide text-left text-gray-900 ">
+              <th class="text-center border-l border-b w-1/6">전체 페이지 수 </th>
+              <th class="text-center border-l border-b w-2/6">세로 최대 카드 수 </th>
+              <th class="text-center border-l border-b w-3/6" :colspan="pageNumber">페이지 별 가로 길이</th>
+            </tr>
+          </thead>
+          <tbody class="">
+            <tr class="text-gray-700">
+              <td class=" ">
+                <input class="w-full font-semibold text-center " type="number" pattern="[0-9]*" v-model="pageNumber" />
+              </td>
+              <td class="border-l text-md font-semibold text-center w-2/6   ">
+                <div class="flex flex-row  justify-between">
+                  <input class="w-5/6 font-semibold text-center" v-model="tempXData" />
+                  <button class="w-1/6 border rounded-lg border-blue-500 text-blue-500  bg-white mr-1"
+                    @click="chageXaxis">적용</button>
+                </div>
+              </td>
+              <td class="border-l p-0" v-for="pageIndex in pageNumber">
+                <div class="  flex flex-row justify-center items-center">
+                  <div v-if="pageNumber < 11"
+                    class="ml-1 h-4 w-4 bg-[#6B6B6B] text-xs text-white rounded-3xl text-center">
+                    {{ pageIndex }}
+                  </div>
                   <input class="w-full h-full font-semibold text-center" type="number" pattern="[0-9]*"
                     v-model="yAxis[pageIndex - 1]" @input="validateInput(pageIndex - 1)" />
-
-
-
-                  <!-- <select id="underline_select" v-model="yAxis[pageIndex - 1]"
-                    class=" text-center block  w-full text-sm  ">
-                    <option value="3" selected>3</option>
-                    <option value="4" selected>4</option>
-                  </select> -->
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
-    <div class="flex gap-4 px-4 h-4/5">
+    <div class="flex gap-4 px-4 py-2 " style="height: calc(100% - 160px )">
       <section class="container  sm:w-2/6  lg:w-1/6  mx-auto font-mono">
-        <div class=" overflow-auto  h-full">
-          <table class=" w-full overflow-x-auto rounded-lg shadow-lg ">
-            <thead>
-              <tr
-                class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
-                <th class="px-2 py-3 text-center text-xs">호실</th>
-                <th class="px-2 py-3 text-center text-xs">인원 수</th>
-                <th class="px-2 py-3 text-center text-xs ">시작 값 - 종료값</th>
+        <div class="overflow-y-auto  max-h-[70vh]">
+          <table class=" w-full overflow-x-auto border-separate border-spacing-0   ">
+            <thead class="w-full rounded-lg border sticky top-0   ">
+              <tr class=" text-xs  text-center text-white  bg-[#6B6B6B]">
+                <th class=" px-1 py-3 rounded-l-lg ">호실</th>
+                <th class="px-1 py-3  border-x ">인원 수</th>
+                <th class="px-1 py-3  rounded-r-lg  ">시작 값 - 종료값</th>
+              </tr>
+              <tr>
+                <div class="h-3" />
               </tr>
             </thead>
-            <tbody class="bg-white">
-              <tr class="text-gray-700" v-for="list in itemList.data" :key="list">
-                <td class="px-2 py-3 w-16 border">
-                  <!-- <div class="flex items-center text-sm"> -->
-                  <!-- <div> -->
+            <tbody class="">
+              <tr class="" v-for="(list, index) in itemList.data" :key="list">
+                <td class="px-2 py-1 w-16 border "
+                  :class="[index == 0 ? 'rounded-ss-lg  ' : index == itemList.data.length - 1 ? 'rounded-es-lg' : '']">
                   <div class="font-semibold text-center">{{ convertToRoomNumber(list.room_name) }}</div>
-                  <!-- <p class="text-xs text-gray-600">Developer</p> -->
-                  <!-- </div> -->
-                  <!-- </div> -->
                 </td>
-                <td class="px-2 py-3 w-16 border text-md font-semibold text-center">{{ list.room_bedNum }}</td>
-                <td class="px-2 py-3 border text-xs h-full ">
-                  <div class="w-full h-full flex">
-                    <input class=" w-full  border boreder-1 h-8 border-gray-300 leading-tight  rounded-md text-center"
+                <td class="px-2 py-1 w-16 border text-md font-semibold text-center">{{ list.room_bedNum }}</td>
+                <td class="px-2 py-1 border text-xs h-full"
+                  :class="[index == 0 ? 'rounded-se-lg' : index == itemList.data.length - 1 ? 'rounded-ee-lg' : '']">
+                  <div class="w-full h-full flex items-center justify-center">
+                    <input class="w-full border border-1 h-8 border-gray-300 leading-tight rounded-md text-center"
                       :value="currDataList[list.room_name]?.startPoint"
                       @input="updatePoint(list.room_bedNum, list.room_name, $event.target.value)"
-                      @blur="erromessage = null" placeholder="시작값 입력">
-                    <div class="text-center">-</div>
-                    <input class=" w-full border boreder-1 h-8 border-gray-300 text-center   rounded-md "
+                      @blur="errorMessage = null" placeholder="시작값 입력">
+                    <div class="text-gray-300 mx-1">-</div>
+                    <input class="w-full border border-1 h-8 border-gray-300 text-center rounded-md"
                       :value="currDataList[list.room_name]?.endPoint"
                       @input="updatePoint(list.room_bedNum, list.room_name, $event.target.value, 'end')"
-                      @blur="erromessage = null" placeholder="종료값 입력">
+                      @blur="errorMessage = null" placeholder="종료값 입력">
                   </div>
-                  <!-- :class="{ -->
-                  <!-- 'bg-green-100 text-green-700': currDataList[list.room_name]?.startPoint !== null && currDataList[list.room_name]?.endPoint !== null, -->
-                  <!-- 'bg-red-100 text-red-700': currDataList[list.room_name]?.startPoint == null || currDataList[list.room_name]?.endPoint == null, -->
-                  <!-- }" -->
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
-      <div class=" sm:w-4/6  lg:w-5/6 py-4  overflow-auto">
-        <div class="flex flex-auto w-full flex-wrap h-full  " style="max-height: 95%;">
+      <div class=" sm:w-4/6  lg:w-5/6 overflow-auto">
+        <div class="flex flex-auto w-full flex-wrap h-full   " style="max-height: 95%;">
           <div v-for="columnIndex in pageNumber" :key="columnIndex"
             :class="[pageNumber == 1 ? 'w-full' : 'w-3/6', pageNumber <= 2 ? 'h-full' : '']">
-
             <div class="flex">
               <div class="w-1/3 text-center" v-for=" index in Number(yAxis[columnIndex - 1])">
                 {{ numberToAlphabet(getStartColumnForPageIndex(columnIndex) - 1 + index) }}
               </div>
             </div>
-            <div class="rounded-lg shadow-lg mx-1  p-1 border border-gray-700 " :style="gridStyle(columnIndex)"
+            <div class="rounded-lg shadow-lg mx-1  p-3 border " :style="gridStyle(columnIndex)"
               :class="[pageNumber <= 2 ? 'h-full' : '']">
-              <div class="flex  items-center justify-center border-black "
+              <div class="flex  items-center justify-center  "
                 v-for="(content, index) in getArrayByPageNumber(columnIndex)" :key="content"
                 :class="[`box-${content?.type}`]">
                 {{ convertToRoom(content?.name, content?.type, index) }}
                 <span v-if="content?.type === 'bed'">- {{ index - beforeIndex }}</span>
                 <span v-if="content == null" class="box-empty  ">
-                  {{ numberToAlphabet(getStartColumnForPageIndex(columnIndex) + parseInt(index / 12)) }} {{ index % xAxis
-                    +
-                    1 }}
+                  {{ numberToAlphabet(getStartColumnForPageIndex(columnIndex) + parseInt(index / 12)) }}
+                  {{ index % xAxis + 1 }}
                 </span>
-
               </div>
               <div
                 v-for="(content, index) in getLengthByPageNumber(columnIndex) - getArrayByPageNumber(columnIndex).length"
@@ -153,8 +142,7 @@
                 {{ numberToAlphabet(
                   getStartColumnForPageIndex(columnIndex) + parseInt((getArrayByPageNumber(columnIndex).length + index)
                     / 12)) }}
-                {{
-                  (getArrayByPageNumber(columnIndex).length + index) % xAxis + 1 }}
+                {{ (getArrayByPageNumber(columnIndex).length + index) % xAxis + 1 }}
                 <!-- {{ getArrayByPageNumber(columnIndex).length + index }} -->
               </div>
             </div>
@@ -162,31 +150,29 @@
         </div>
       </div>
     </div>
-    <div class="w-full flex  justify-end p-4 " style="height: 10%;">
-      <button type="button"
-        class="py-2.5 px-8 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-black hover:bg-gray-100 hover:text-blue-500 hover:border-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-        저장
-      </button>
-      <button type="button"
-        class="py-2.5 px-8 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-black hover:bg-gray-100 hover:text-red-500  hover:border-red-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+    <div class="w-full flex  justify-end p-4  gap-2" style="height: 80px;">
+      <button type="button" class="py-2.5 px-8  text-base font-medium text-white focus:outline-none bg-[#8B8B8B] rounded-lg  border border-[#8B8B8B]
+        hover:bg-white hover:text-red-500  hover:border-red-500 focus:z-10 focus:ring-4 focus:ring-gray-200">
         취소
       </button>
+      <button type="button" class="py-2.5 px-8 text-base font-medium text-white focus:outline-none bg-[#678FFF] rounded-lg border border-[#678FFF]
+        hover:bg-white hover:text-[#678FFF] hover:border-[#678FFF] focus:z-10 focus:ring-4 focus:ring-gray-200 ">
+        저장
+      </button>
     </div>
-
-    <div v-if="erromessage != null"
-      class="fixed flex items-center w-1/6A bottom-1 left-5 p-4 mb-4 border border-red-500 bg-white text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
+    <div v-if="errorMessage != null"
+      class="fixed flex items-center w-1/6A bottom-1 left-5 p-4 mb-4 border border-red-500  text-gray-500 bg-red-500 rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
       role="alert">
       <div
-        class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
+        class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-200 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
         <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
           viewBox="0 0 20 20">
           <path
             d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z" />
         </svg>
       </div>
-      <div class="ms-3 text-sm font-normal text-red-500">{{ erromessage }}</div>
+      <div class="ms-3 text-sm font-normal text-red-200">{{ errorMessage }}</div>
     </div>
-
   </div>
 </template>
 <script setup>
@@ -197,7 +183,7 @@ const yAxis = reactive([3, 3, 3, 3])
 const xAxis = ref(12)
 const tempXData = ref(xAxis.value)
 const pageNumber = ref(Number(4))
-const erromessage = ref(null)
+const errorMessage = ref(null)
 function chageXaxis() {
   xAxis.value = tempXData.value
   for (const item in currDataList) {
@@ -249,7 +235,6 @@ function gridStyle(index) {
     gridAutoFlow: 'column',// 열 방향으로 그리드 아이템 나열
     gridTemplateRows: `repeat(${xAxis.value}, 1fr)`,
     gridTemplateColumns: `repeat(${rowstyle}, 1fr)`,
-    padding: '4px',
     gap: '1px',
     borderRadius: "15px"
   }
@@ -356,8 +341,6 @@ const itemList = ref({
   "data": [{
     "_id": "65a48e674a64efd1ca01c37d",
     "room_name": "3", "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "5", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
-  }, {
-    "room_name": "19", "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "11", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
   },
   {
     "_id": "65a48e674a64efd1ca01c37f", "room_name": "6", "ward_name": "63병동",
@@ -479,15 +462,15 @@ function updatePoint(roomBedNum, roomName, value, pointName) {
   deleteBedInList(roomName)
   const convertRoomNumber = addNumberToCell(roomBedNum, value, pointName);
   if (!isEmptyBed(convertRoomNumber.start, convertRoomNumber.end)) {
-    erromessage.value = '다른 값이 이미 들어가 있습니다.'
+    errorMessage.value = '다른 값이 이미 들어가 있습니다.'
     return resetPoints(roomName, value, pointName)
   }
   if (convertRoomNumber == false) {
-    erromessage.value = '입력 값 이 잘못되었습니다.'
+    errorMessage.value = '입력 값 이 잘못되었습니다.'
     return resetPoints(roomName, value, pointName)
   }
   if (convertRoomNumber.overFlow) {
-    erromessage.value = '침상 수가 범위를 벗어납니다.'
+    errorMessage.value = '침상 수가 범위를 벗어납니다.'
     return resetPoints(roomName, value, pointName)
   }
   let beforeStartIndex = null
@@ -499,11 +482,11 @@ function updatePoint(roomBedNum, roomName, value, pointName) {
     currCurrIndex = getStartColumnForPageIndex(i) * xAxis.value
   }
   if (isEmptyBed(beforeStartIndex, beforeEndIndex)) {
-    erromessage.value = '이전 페이지가 비어있음';
+    errorMessage.value = '이전 페이지가 비어있음';
     return resetPoints(roomName, value, pointName)
   }
   addBedInList(roomName, convertRoomNumber.start, convertRoomNumber.end)
-  erromessage.value = null
+  errorMessage.value = null
   currDataList[roomName].startPoint = convertRoomNumber.startString;
   currDataList[roomName].endPoint = convertRoomNumber.endString;
 }
@@ -549,7 +532,7 @@ function isEmptyBed(startPoint, endPoint) {
 }
 
 const wardList = ["61병동", "63병동", "133병동", "81병동"]
-const selectWard = ref(wardList[0])
+const selectWard = ref('병동 선택')
 
 watch((pageNumber), () => {
   while (pageNumber.value > yAxis.length) {
@@ -575,7 +558,6 @@ onBeforeMount(() => {
   border-radius: 5px;
   text-align: center;
   margin: 0px 3px;
-
   font-size: .9rem
 }
 
@@ -584,7 +566,7 @@ onBeforeMount(() => {
   text-align: center;
   box-shadow: 0px 0px 3px #242424A6;
   border-radius: 5px;
-  margin: 0px 3px;
+  margin: 1px 3px;
   font-size: .9rem
 }
 
@@ -595,12 +577,12 @@ onBeforeMount(() => {
   height: 100%;
   width: 100%;
   color: #7C7C7C;
+  border-radius: 5px;
 }
 
-.box-undefined {
-  border-radius: 5px;
-  min-height: 20px;
-  /* border: 1px solid #000000; */
 
+table {
+  border-collapse: separate;
+  border-spacing: 0 0px;
 }
 </style>
