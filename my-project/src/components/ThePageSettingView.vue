@@ -54,10 +54,13 @@
                 <input class="w-full font-semibold text-center " type="number" pattern="[0-9]*" v-model="pageNumber" />
               </td>
               <td class="border-l text-md font-semibold text-center w-2/6   ">
-                <div class="flex flex-row  justify-between">
+                <div class="flex flex-row  justify-between p-[2px]">
                   <input class="w-5/6 font-semibold text-center" v-model="tempXData" />
-                  <button class="w-1/6 border rounded-lg border-blue-500 text-blue-500  bg-white mr-1"
-                    @click="chageXaxis">적용</button>
+                  <div class="w-1/6">
+                    <button class="border rounded-lg  border-blue-500 text-blue-500  bg-white  py-1 px-5 text-sm"
+                      @click="chageXaxis">적용</button>
+                  </div>
+
                 </div>
               </td>
               <td class="border-l p-0" v-for="pageIndex in pageNumber">
@@ -152,7 +155,7 @@
     </div>
     <div class="w-full flex  justify-end p-4  gap-2" style="height: 80px;">
       <button type="button" class="py-2.5 px-8  text-base font-medium text-white focus:outline-none bg-[#8B8B8B] rounded-lg  border border-[#8B8B8B]
-        hover:bg-white hover:text-red-500  hover:border-red-500 focus:z-10 focus:ring-4 focus:ring-gray-200">
+        hover:bg-white hover:text-[#8B8B8B] hover:border-[#8B8B8B] focus:z-10 focus:ring-4 focus:ring-gray-200">
         취소
       </button>
       <button type="button" class="py-2.5 px-8 text-base font-medium text-white focus:outline-none bg-[#678FFF] rounded-lg border border-[#678FFF]
@@ -177,6 +180,7 @@
 </template>
 <script setup>
 import { ref, onBeforeMount, reactive, computed, watch } from 'vue';
+
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
 const yAxis = reactive([3, 3, 3, 3])
