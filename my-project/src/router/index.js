@@ -5,7 +5,7 @@ import loginView from "@/components/loginView.vue";
 import TheAccountManagementView from "@/components/TheAccountManagementView.vue";
 const routes = [
 	{
-		path: "/home",
+		path: "/",
 		name: "home",
 		children: [
 			{

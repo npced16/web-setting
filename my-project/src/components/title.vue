@@ -1,6 +1,6 @@
 <template>
   <div>
-    <nav class="bg-[#678FFF]  ">
+    <nav class="bg-black ">
       <div class=" max-w-7xl px-2 sm:px-6 lg:px-8">
         <div class="relative flex h-16 items-center justify-between">
           <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
@@ -10,16 +10,9 @@
             </div>
             <div class="hidden sm:ml-6 sm:block">
               <div class="flex space-x-4">
-                <router-link to="settingWard" class="
-               rounded-md px-3 py-2 text-sm font-medium" :class="[(route.fullPath == '/settingWard') ?
-                 'bg-gray-900  text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white']">
-                  병실 관리 </router-link>
-                <router-link to="settingAccount" class=" rounded-md px-3 py-2 text-sm font-medium" :class="[(route.fullPath == '/settingAccount') ?
-                  'bg-gray-900  text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white']">
-                  계정 관리</router-link>
-                <router-link to="login"
-                  class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">
-                  로그인 페이지</router-link>
+                <NavLink to="settingWard">병실 관리</NavLink>
+                <NavLink to="settingAccount">계정 관리</NavLink>
+                <NavLink to="login">로그아웃</NavLink>
               </div>
             </div>
           </div>
@@ -33,8 +26,8 @@
 </template>
 
 <script setup>
+import NavLink from './NavLink.vue';
 import { useRoute, useRouter } from 'vue-router';
-const route = useRoute();
 
 </script>
 
