@@ -79,7 +79,7 @@
       </div>
     </div>
     <div class="flex gap-4 px-4 py-2 " style="height: calc(100% - 160px )">
-      <section class="container  sm:w-2/6  lg:w-1/6  mx-auto font-mono">
+      <section class="container  sm:w-2/6  lg:w-1/6  mx-auto">
         <div class="overflow-y-auto  max-h-[70vh]">
           <table class=" w-full overflow-x-auto border-separate border-spacing-0   ">
             <thead class="w-full rounded-lg border sticky top-0   ">

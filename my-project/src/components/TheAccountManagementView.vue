@@ -46,7 +46,7 @@
     </label>
   </div>
   <div class=" px-4 py-2 ">
-    <section class="container  mx-auto font-mono">
+    <section class="container  mx-auto ">
       <div class="overflow-y-auto pr-5  max-h-[70vh]">
         <table class=" w-full overflow-x-auto border-separate border-spacing-0   ">
           <thead class="w-full rounded-lg border sticky top-0   ">
@@ -68,16 +68,13 @@
               <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.['space_type(DR, CU)'] }}</td>
               <td class="px-2 py-1  border text-md font-semibold text-center">
                 {{ item?.['space_unit(hospital, ward, room,bed)'] }}</td>
-              <td class="px-2 py-1  w-96 border text-md font-semibold text-center">
+              <td class="px-2 py-1  lg:w-64 border text-md font-semibold text-center">
                 <div class="flex  justify-around">
                   <button type="button" class="py-1 px-3 text-base font-medium text-white focus:outline-none bg-[#678FFF] rounded-lg border border-[#678FFF]
         hover:bg-white hover:text-[#678FFF]  focus:z-10 focus:ring-4 focus:ring-gray-200 ">
-                    병동 변경
+                    수정
                   </button>
-                  <button type="button" class="py-1 px-3 text-base font-medium text-white focus:outline-none bg-[#678FFF] rounded-lg border border-[#678FFF]
-        hover:bg-white hover:text-[#678FFF]  focus:z-10 focus:ring-4 focus:ring-gray-200 ">
-                    팀 변경
-                  </button>
+
                   <button type="button" class="py-1 px-3  text-base font-medium text-white focus:outline-none bg-red-500 rounded-lg  border border-red-500
         hover:bg-white hover:text-red-500   focus:z-10 focus:ring-4 focus:ring-gray-200">
                     삭제
@@ -147,7 +144,7 @@ async function loadFile(FileName) {
                 tempObject[headerKeys[index]] = row.values[index + 1];
               }
               accountList.push(tempObject)
-              console.log('header :>> ', tempObject, headerKeys, header);
+              // console.log('header :>> ', tempObject, headerKeys, header);
               // console.log(row.values.length, rowIndex, row.values)
             }
 
@@ -158,6 +155,12 @@ async function loadFile(FileName) {
   } catch (error) {
     console.error("잘못된 양식의 파일입니다.", error)
   }
+}
+
+async function addAccount() {
+  accountList.push(tempObject)
+  // TODO 나중에 통신으로 데이터추가하게 변경해야함
+
 }
 
 </script>
