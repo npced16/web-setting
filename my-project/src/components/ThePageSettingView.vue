@@ -12,7 +12,7 @@
                 <span class="ml-3 block truncate">{{ selectWard }}</span>
               </span>
               <span class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
+                <ChevronDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
               </span>
             </ListboxButton>
             <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100"
@@ -70,7 +70,7 @@
                     {{ pageIndex }}
                   </div>
                   <input class="w-full h-full font-semibold text-center" type="number" pattern="[0-9]*"
-                    v-model="yAxis[pageIndex - 1]" @input="validateInput(pageIndex - 1)" />
+                    v-model="yAxis[pageIndex - 1]" @input="handlerDateInput(pageIndex - 1)" />
                 </div>
               </td>
             </tr>
@@ -78,7 +78,7 @@
         </table>
       </div>
     </div>
-    <div class="flex gap-4 px-4 py-2 " style="height: calc(100% - 160px )">
+    <div class="flex gap-4 px-4 py-2 " style="height: calc(100% - 120px )">
       <section class="container  sm:w-2/6  lg:w-1/6  mx-auto">
         <div class="overflow-y-auto  max-h-[70vh]">
           <table class=" w-full overflow-x-auto border-separate border-spacing-0   ">
@@ -127,7 +127,7 @@
                 {{ numberToAlphabet(getStartColumnForPageIndex(columnIndex) - 1 + index) }}
               </div>
             </div>
-            <div class="rounded-lg shadow-lg mx-1  p-3 border " :style="gridStyle(columnIndex)"
+            <div class="rounded-lg shadow-lg mx-1  p-3 border " :style="getGridStyleOfIndex(columnIndex)"
               :class="[pageNumber <= 2 ? 'h-full' : '']">
               <div class="flex  items-center justify-center  "
                 v-for="(content, index) in getArrayByPageNumber(columnIndex)" :key="content"
@@ -182,7 +182,7 @@
 import { ref, onBeforeMount, reactive, computed, watch } from 'vue';
 
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
+import { CheckIcon, ChevronDownIcon } from '@heroicons/vue/20/solid'
 const yAxis = reactive([3, 3, 3, 3])
 const xAxis = ref(12)
 const tempXData = ref(xAxis.value)
@@ -224,7 +224,8 @@ const contents =
       { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "room", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, "", ""], [{ "type": "room", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, "", "", "", "", "", ""]]
     }
   ]
-function validateInput(index) {
+
+function handlerDateInput(index) {
   const inputValue = yAxis[index];
   if (inputValue < 1) {
     yAxis[index] = 1;
@@ -232,7 +233,8 @@ function validateInput(index) {
     yAxis[index] = 10;
   }
 };
-function gridStyle(index) {
+
+function getGridStyleOfIndex(index) {
   const rowstyle = yAxis[index - 1] || 3
   const style = {
     display: 'grid',

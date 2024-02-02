@@ -12,7 +12,7 @@
               <span v-else class="block truncate">병동을 선택해 주세요</span>
             </span>
             <span class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-              <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
+              <ChevronDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
             </span>
           </ListboxButton>
           <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100"
@@ -46,7 +46,7 @@
     </label>
   </div>
   <div class=" px-4 py-2 ">
-    <section class="container  mx-auto ">
+    <section class="container   mx-auto ">
       <div class="overflow-y-auto pr-5  max-h-[70vh]">
         <table class=" w-full overflow-x-auto border-separate border-spacing-0   ">
           <thead class="w-full rounded-lg border sticky top-0   ">
@@ -103,7 +103,7 @@
 <script setup>
 import { ref, onBeforeMount, reactive, computed, watch } from 'vue';
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
-import { CheckIcon, ChevronUpDownIcon, UserIcon } from '@heroicons/vue/20/solid'
+import { CheckIcon, ChevronDownIcon, UserIcon } from '@heroicons/vue/20/solid'
 import ExcelJS from "exceljs";
 const selectWard = ref(null)
 const wardList = reactive(['61병동', '62병동'])
