@@ -1,8 +1,9 @@
 // src/router/index.js
 import { createRouter, createWebHashHistory } from "vue-router";
-import ThePageSettingView from "@/components/ThePageSettingView.vue";
-import loginView from "@/components/loginView.vue";
-import TheAccountManagementView from "@/components/TheAccountManagementView.vue";
+import ThePageSettingView from "@/view/ThePageSettingView.vue";
+import loginView from "@/view/loginView.vue";
+import TheAccountManagementView from "@/view/TheAccountManagementView.vue";
+import TheSpaceManagementView from "@/view/TheSpaceManagementView.vue";
 const routes = [
 	{
 		path: "/",
@@ -17,6 +18,11 @@ const routes = [
 				path: "/settingAccount",
 				name: "settingAccount",
 				component: TheAccountManagementView,
+			},
+			{
+				path: "/settingSpace",
+				name: "settingSpace",
+				component: TheSpaceManagementView,
 			},
 		],
 	},

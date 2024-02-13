@@ -12,6 +12,14 @@ export default defineConfig({
 				find: "@components",
 				replacement: path.resolve(__dirname, "src/components"),
 			},
+			{
+				find: "@view",
+				replacement: path.resolve(__dirname, "src/view"),
+			},
+			{
+				find: "@modal",
+				replacement: path.resolve(__dirname, "src/modal"),
+			},
 		],
 	},
 });

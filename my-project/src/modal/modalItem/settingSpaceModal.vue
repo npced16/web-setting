@@ -1,0 +1,135 @@
+<template>
+	<baseModal @close-modal="closeModal">
+		<!-- <div class="grid gap-4">
+			<div v-for="(value, key) in spaceData" :key="key" class="mb-4 flex">
+				<label :for="key" class="block text-sm font-medium ">{{ labels[key] }}:</label>
+				<input type="text" :id="key" v-model="spaceData[key]"
+					class="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+			</div>
+		</div>
+		<div class="flex justify-end mt-4">
+			<button @click="saveChanges" class="px-4 py-2 bg-indigo-500 text-white rounded-md mr-2">수정하기</button>
+			<button @click="close" class="px-4 py-2 bg-gray-500 text-white rounded-md">닫기</button>
+		</div> -->
+		<div class="grid  grid-cols-4 justify-center gap-4">
+			<div v-for="(value, key) in spaceData" :key="key" class="">
+				<label :for="key" class="block text-xl font-bold font-black ">{{ labels[key] }}</label>
+				<input type="text" :id="key" v-model="spaceData[key]"
+					class="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+			</div>
+		</div>
+		<div class="flex justify-end ">
+			<button @click="closeModal" class="px-4 py-2 mr-2 bg-gray-500 text-white rounded-md">닫기</button>
+			<button @click="saveChanges" class="px-4 py-2 bg-[#678FFF] text-white rounded-md ">수정하기</button>
+		</div>
+	</baseModal>
+</template>
+<script setup>
+import baseModal from '../baseModal.vue';
+import { ref, reactive, onBeforeMount, defineEmits, watch, computed } from 'vue';
+const props = defineProps(['settingData']);
+const emit = defineEmits(['closeModal'])
+function closeModal() {
+	emit('closeModal')
+}
+
+// 데이터 설정
+
+const spaceData = reactive({ ...props.settingData });
+const labels = {
+	space_id: "아이디",
+	space_name: "이름",
+	'space_type(DR,CU)': "타입(DR,CU)",
+	space_hospital: "병원 명",
+	space_ward: "병동 명 ",
+	space_room: "호실 명",
+	space_bed: "침상 수",
+	'space_unit(hospital,ward,room,bed)': "병동 타입(hospital, ward, room, bed)"
+}
+
+
+
+function saveChanges() {
+
+}
+
+// function handleSaveSever() {
+// 	settingServer();
+// 	closeModal()
+// }
+
+// function settingServer() {
+// 	useClient.server = server.value;
+// 	useClient.version = version.value;
+// 	useClient.saveStateToLocalStorage();
+// }
+
+onBeforeMount(() => {
+})
+</script>
+<style scoped>
+.card {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	color: #333333;
+	font-size: 3rem;
+	font-weight: 500;
+}
+
+label {
+	font: 500 14px/20px NotoSans;
+	color: #313131;
+}
+
+input.input-box {
+	background: #ffffff 0% 0% no-repeat padding-box;
+	border: 1px solid #c9c9c9;
+	border-radius: 5px;
+	font: normal 14px NotoSans;
+	margin-top: 5px;
+	width: 99%;
+	height: 34px;
+	color: #323232;
+	display: block;
+}
+
+input.input-box::placeholder {
+	color: #c9c9c9;
+}
+
+.blue-button {
+	width: 120px;
+	height: 30px;
+	background: var(--main-color) 0% 0% no-repeat padding-box;
+	box-shadow: 1px 1px 3px #40404029;
+	border-radius: 10px;
+	border: none;
+	color: white;
+	margin-left: 15px;
+	font: 500 16px/24px NotoSans;
+	cursor: pointer;
+
+}
+
+.blue-button:disabled {
+	background: #e2e2e2 0% 0% no-repeat padding-box;
+	cursor: default;
+
+}
+
+select {
+	display: block;
+	background: #ffffff 0% 0% no-repeat padding-box;
+	border: 1px solid #c9c9c9;
+	margin-top: 5px;
+	border-radius: 5px;
+	width: 100%;
+	height: 38px;
+	font: normal normal 500 14px NotoSans;
+	color: #7c7c7c;
+}
+</style>

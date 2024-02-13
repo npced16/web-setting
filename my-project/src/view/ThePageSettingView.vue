@@ -556,7 +556,7 @@ onBeforeMount(() => {
 
 </script>
 
-<style >
+<style scoped>
 .box-room {
   /* border: 1px solid #000000; */
   background-color: #6B6B6B;

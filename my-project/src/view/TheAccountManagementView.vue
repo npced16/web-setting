@@ -51,7 +51,7 @@
         <table class=" w-full overflow-x-auto border-separate border-spacing-0   ">
           <thead class="w-full rounded-lg border sticky top-0   ">
             <tr class=" text-xs  text-center text-white  bg-[#6B6B6B]">
-              <th class=" px-1 py-3 rounded-l-lg ">ID</th>
+              <th class="px-1 py-3 rounded-l-lg ">ID</th>
               <th class="px-1 py-3">이름</th>
               <th class="px-1 py-3">병동</th>
               <th class="px-1 py-3">팀</th>
@@ -87,7 +87,8 @@
       </div>
     </section>
   </div>
-  <div v-if="errorMessage != null"
+  <!-- {{ accountList }} -->
+  <!-- <div v-if="errorMessage != null"
     class="fixed flex items-center w-1/6A bottom-1 left-5 p-4 mb-4 border border-red-500  text-gray-500 bg-red-500 rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
     role="alert">
     <div
@@ -98,7 +99,7 @@
       </svg>
     </div>
     <div class="ms-3 text-sm font-normal text-red-200">{{ errorMessage }}</div>
-  </div>
+  </div> -->
 </template>
 <script setup>
 import { ref, onBeforeMount, reactive, computed, watch } from 'vue';
@@ -143,7 +144,7 @@ async function loadFile(FileName) {
               for (let index = 0; index < headerKeys.length; index++) {
                 tempObject[headerKeys[index]] = row.values[index + 1];
               }
-              accountList.push(tempObject)
+              addAccount(tempObject)
               // console.log('header :>> ', tempObject, headerKeys, header);
               // console.log(row.values.length, rowIndex, row.values)
             }
@@ -156,15 +157,16 @@ async function loadFile(FileName) {
     console.error("잘못된 양식의 파일입니다.", error)
   }
 }
-
-async function addAccount() {
+async function addAccount(tempObject) {
   accountList.push(tempObject)
   // TODO 나중에 통신으로 데이터추가하게 변경해야함
 
 }
 
+
+
 </script>
-<style >
+<style scoped>
 /* 파일 입력 필드 스타일 수정 */
 input[type="file"] {
   display: none;

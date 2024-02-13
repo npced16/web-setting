@@ -1,6 +1,6 @@
 <template>
   <div>
-    <nav class="bg-black ">
+    <nav class="bg-[#353535] ">
       <div class=" max-w-7xl px-2 sm:px-6 lg:px-8">
         <div class="relative flex h-16 items-center justify-between">
           <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
@@ -9,9 +9,10 @@
                 alt="Your Company"> -->
             </div>
             <div class="hidden sm:ml-6 sm:block">
-              <div class="flex space-x-4">
+              <div class="flex  space-x-4">
                 <NavLink to="settingWard">병실 관리</NavLink>
                 <NavLink to="settingAccount">계정 관리</NavLink>
+                <NavLink to="settingSpace">병동 관리</NavLink>
                 <NavLink to="login">로그아웃</NavLink>
               </div>
             </div>

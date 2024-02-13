@@ -7,6 +7,7 @@
 </template>
 <script setup>
 import TitleVue from '@/components/title.vue';
+import sidebar from './components/sidebar.vue';
 import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();
