@@ -119,7 +119,7 @@
         </div>
       </section>
       <div class=" sm:w-4/6  lg:w-5/6 overflow-auto">
-        <div class="flex flex-auto w-full flex-wrap h-full   " style="max-height: 95%;">
+        <div class="flex flex-auto w-full flex-wrap h-full  max-h-[70vh] ">
           <div v-for="columnIndex in pageNumber" :key="columnIndex"
             :class="[pageNumber == 1 ? 'w-full' : 'w-3/6', pageNumber <= 2 ? 'h-full' : '']">
             <div class="flex">
@@ -134,7 +134,7 @@
                 :class="[`box-${content?.type}`]">
                 {{ convertToRoom(content?.name, content?.type, index) }}
                 <span v-if="content?.type === 'bed'">- {{ index - beforeIndex }}</span>
-                <span v-if="content == null" class="box-empty  ">
+                <span v-if="(content == '' || content == null)" class="box-empty  ">
                   {{ numberToAlphabet(getStartColumnForPageIndex(columnIndex) + parseInt(index / 12)) }}
                   {{ index % xAxis + 1 }}
                 </span>
@@ -159,7 +159,8 @@
         취소
       </button>
       <button type="button" class="py-2.5 px-8 text-base font-medium text-white focus:outline-none bg-[#678FFF] rounded-lg border border-[#678FFF]
-        hover:bg-white hover:text-[#678FFF] hover:border-[#678FFF] focus:z-10 focus:ring-4 focus:ring-gray-200 ">
+        hover:bg-white hover:text-[#678FFF] hover:border-[#678FFF] focus:z-10 focus:ring-4 focus:ring-gray-200"
+        @click="savePageData">
         저장
       </button>
     </div>
@@ -180,13 +181,13 @@
 </template>
 <script setup>
 import { ref, onBeforeMount, reactive, computed, watch } from 'vue';
-
+import axios from 'axios';
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronDownIcon } from '@heroicons/vue/20/solid'
 const yAxis = reactive([3, 3, 3, 3])
 const xAxis = ref(12)
 const tempXData = ref(xAxis.value)
-const pageNumber = ref(Number(4))
+const pageNumber = ref(4)
 const errorMessage = ref(null)
 function chageXaxis() {
   xAxis.value = tempXData.value
@@ -234,8 +235,12 @@ function handlerDateInput(index) {
   }
 };
 
-function getGridStyleOfIndex(index) {
-  const rowstyle = yAxis[index - 1] || 3
+/**
+ * 페이지번호에 따른 그리드 반환
+ * @param {Number} pageNumber
+ */
+function getGridStyleOfIndex(pageNumber) {
+  const rowstyle = yAxis[pageNumber - 1]
   const style = {
     display: 'grid',
     gridAutoFlow: 'column',// 열 방향으로 그리드 아이템 나열
@@ -247,6 +252,31 @@ function getGridStyleOfIndex(index) {
   return style
 }
 
+function savePageData() {
+  let serializedArrays = [];
+  for (let pageNum = 1; pageNum < pageNumber.value + 1; pageNum++) {
+    let pageArray = getArrayByPageNumber(pageNum);
+    for (let i = 0; i < yAxis[pageNum - 1] * xAxis.value; i++) {
+      if (pageArray[i] == null) {
+        pageArray[i] = "";
+      }
+    }
+    serializedArrays[pageNum - 1] = JSON.stringify(pageArray);
+  }
+  console.log(serializedArrays);
+  // TODO: serializedArrays 보내기
+  const apiConfig = {
+    method: "get",
+    url: 'http://dev.finenurse.co.kr/api/finenurse/web/v1/setting/client?type=display&ward=133%EB%B3%91%EB%8F%99'
+  };
+  axios(apiConfig)
+    .then(response => {
+      // 응답 처리
+    })
+    .catch(error => {
+      // 오류 처리
+    });
+}
 
 let currDataArray = reactive([])
 /**
@@ -256,18 +286,16 @@ let currDataArray = reactive([])
  * @returns  {(Array)}  페이지에 해당하는 데이터 배열
  */
 function getArrayByPageNumber(pageIndex) {
-
   return currDataArray.slice(getStartColumnForPageIndex(pageIndex) * xAxis.value, getStartColumnForPageIndex(pageIndex + 1) * xAxis.value);
 }
 
-
+// 
 function getLengthByPageNumber(pageIndex) {
   return ((getStartColumnForPageIndex(pageIndex + 1) * xAxis.value) - (getStartColumnForPageIndex(pageIndex) * xAxis.value))
 }
 /**
  * index 에 따라 현재 page의 시작 열을 반환
  * @param {*} pageIndex 
- * 
  * @returns {Number} - Page가 시작되는 열
  */
 function getStartColumnForPageIndex(pageIndex) {
@@ -289,6 +317,7 @@ function getContents(contents) {
       let count = 0 //
       for (const data of content.col[item]) {
         ++count
+
         if (data.type == 'room') {
           if (!currDataList[data.name]) {
             currDataList[data.name] = {
@@ -308,12 +337,16 @@ function getContents(contents) {
             }
           }
         }
+
+
         if (data.type == 'bed') {
           currDataList[data.name].endPoint = numberToAlphabet(parseInt(item) + size) + count
           currDataList[data.name].end = currDataIndex
           currDataArray[currDataIndex] = { type: 'bed', name: data.name }
         }
+
         currDataIndex++
+
       }
     }
     size += content.size // 다음 table 시 size 설정용
@@ -579,7 +612,7 @@ onBeforeMount(() => {
   text-align: center;
   box-shadow: 0px 0px 3px #242424A6;
   border-radius: 5px;
-  margin: 1px 3px;
+  margin: 0px 3px;
   font-size: .9rem
 }
 

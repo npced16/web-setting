@@ -141,7 +141,7 @@ function closeSettingModal() {
 const selectWard = ref(null)
 const wardList = reactive(['61병동', '62병동'])
 
-const accountList = reactive([])
+const accountList = reactive([{ "space_id": "admin", "space_name": "전체", "space_type(DR,CU)": "DR", "space_unit(hospital,ward,room,bed)": "ward", "space_hospital": "안양", "space_ward": "61병동", "space_room": "10호실", "space_bed": 5 }])
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (file) {

@@ -1,17 +1,6 @@
 <template>
 	<baseModal @close-modal="closeModal">
-		<!-- <div class="grid gap-4">
-			<div v-for="(value, key) in spaceData" :key="key" class="mb-4 flex">
-				<label :for="key" class="block text-sm font-medium ">{{ labels[key] }}:</label>
-				<input type="text" :id="key" v-model="spaceData[key]"
-					class="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-			</div>
-		</div>
-		<div class="flex justify-end mt-4">
-			<button @click="saveChanges" class="px-4 py-2 bg-indigo-500 text-white rounded-md mr-2">수정하기</button>
-			<button @click="close" class="px-4 py-2 bg-gray-500 text-white rounded-md">닫기</button>
-		</div> -->
-
+		병동 수정하기
 		<div class="overflow-x-auto text-md font-semibold">
 			<table class="min-w-full divide-y divide-gray-200">
 				<thead class="bg-gray-100">
@@ -26,7 +15,9 @@
 					<tr>
 						<td v-for="(value, key) in spaceData" :key="key" class="border whitespace-nowrap">
 							<input type="text" :id="key" v-model="spaceData[key]"
-								class="w-full h-full p-2 focus:outline-none text-center  focus:ring-indigo-500 focus:border-indigo-500">
+								class="w-full h-full p-2 focus:outline-none text-center  focus:ring-indigo-500 focus:border-indigo-500"
+								:placeholder="key === 'space_unit(hospital,ward,room,bed)' ? '(hospital, ward, room, bed)'
+									: key === 'space_type(DR,CU)' ? '(DR,CU)' : ''">
 						</td>
 					</tr>
 				</tbody>
@@ -56,12 +47,12 @@ const spaceData = reactive({ ...props.settingData });
 const labels = {
 	space_id: "아이디",
 	space_name: "이름",
-	'space_type(DR,CU)': "타입(DR,CU)",
+	'space_type(DR,CU)': "타입",
 	space_hospital: "병원 명",
 	space_ward: "병동 명 ",
 	space_room: "호실 명",
 	space_bed: "침상 수",
-	'space_unit(hospital,ward,room,bed)': "병동 타입(hospital, ward, room, bed)"
+	'space_unit(hospital,ward,room,bed)': "병동 타입"
 }
 
 
@@ -69,18 +60,6 @@ const labels = {
 function saveChanges() {
 
 }
-
-// function handleSaveSever() {
-// 	settingServer();
-// 	closeModal()
-// }
-
-// function settingServer() {
-// 	useClient.server = server.value;
-// 	useClient.version = version.value;
-// 	useClient.saveStateToLocalStorage();
-// }
-
 onBeforeMount(() => {
 })
 </script>
