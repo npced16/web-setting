@@ -11,16 +11,33 @@
 			<button @click="saveChanges" class="px-4 py-2 bg-indigo-500 text-white rounded-md mr-2">수정하기</button>
 			<button @click="close" class="px-4 py-2 bg-gray-500 text-white rounded-md">닫기</button>
 		</div> -->
-		<div class="grid  grid-cols-4 justify-center gap-4">
-			<div v-for="(value, key) in spaceData" :key="key" class="">
-				<label :for="key" class="block text-xl font-bold font-black ">{{ labels[key] }}</label>
-				<input type="text" :id="key" v-model="spaceData[key]"
-					class="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-			</div>
+
+		<div class="overflow-x-auto text-md font-semibold">
+			<table class="min-w-full divide-y divide-gray-200">
+				<thead class="bg-gray-100">
+					<tr>
+						<th v-for="(value, key) in spaceData" :key="key"
+							class="px-4 py-4  border-x  text-lg font-semibold  text-gray-700 box-borde">
+							{{ labels[key] }}
+						</th>
+					</tr>
+				</thead>
+				<tbody class="bg-white divide-y divide-gray-200">
+					<tr>
+						<td v-for="(value, key) in spaceData" :key="key" class="border whitespace-nowrap">
+							<input type="text" :id="key" v-model="spaceData[key]"
+								class="w-full h-full p-2 focus:outline-none text-center  focus:ring-indigo-500 focus:border-indigo-500">
+						</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
-		<div class="flex justify-end ">
-			<button @click="closeModal" class="px-4 py-2 mr-2 bg-gray-500 text-white rounded-md">닫기</button>
-			<button @click="saveChanges" class="px-4 py-2 bg-[#678FFF] text-white rounded-md ">수정하기</button>
+		<div class="flex justify-end mt-4 gap-4">
+			<button @click="closeModal"
+				class="py-1 px-4  text-base font-medium text-white focus:outline-none bg-[#8B8B8B] rounded-lg  border border-[#8B8B8B]
+        hover:bg-white hover:text-[#8B8B8B] hover:border-[#8B8B8B] focus:z-10 focus:ring-4 focus:ring-gray-200">닫기</button>
+			<button @click="saveChanges" class="py-1 px-3 text-base font-medium text-white focus:outline-none bg-[#678FFF] rounded-lg border border-[#678FFF]
+        hover:bg-white hover:text-[#678FFF]  focus:z-10 focus:ring-4 focus:ring-gray-200">수정하기</button>
 		</div>
 	</baseModal>
 </template>

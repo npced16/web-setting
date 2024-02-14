@@ -54,7 +54,7 @@
         <table class=" w-full overflow-x-auto border-separate border-spacing-0   ">
           <thead class="w-full rounded-lg border sticky top-0   ">
             <tr class=" text-xs  text-center text-white  bg-[#6B6B6B]">
-              <th class=" px-1 py-3 rounded-l-lg ">ID</th>
+              <th class="px-1 py-3 rounded-l-lg ">ID</th>
               <th class="px-1 py-3">타입</th>
               <th class="px-1 py-3">이름</th>
               <th class="px-1 py-3">분류</th>
@@ -77,7 +77,6 @@
               <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.space_room }}</td>
               <td class="px-2 py-1  lg:w-64 border text-md font-semibold text-center">
                 <div class="flex  justify-around">
-
                   <button type="button" class="py-1 px-4  text-base font-medium text-white focus:outline-none bg-[#8B8B8B] rounded-lg  border border-[#8B8B8B]
         hover:bg-white hover:text-[#8B8B8B] hover:border-[#8B8B8B] focus:z-10 focus:ring-4 focus:ring-gray-200"
                     @click="openSettingModal(item)">
@@ -101,6 +100,8 @@
       </div>
     </section>
   </div>
+
+
   <!-- <div v-if="errorMessage != null"
     class="fixed flex items-center w-1/6A bottom-1 left-5 p-4 mb-4 border border-red-500  text-gray-500 bg-red-500 rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
     role="alert">

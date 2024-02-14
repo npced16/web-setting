@@ -56,7 +56,7 @@
               <td class="border-l text-md font-semibold text-center w-2/6   ">
                 <div class="flex flex-row  justify-between p-[2px]">
                   <input class="w-5/6 font-semibold text-center" v-model="tempXData" />
-                  <div class="w-1/6">
+                  <div class="w-1/6 min-w-[80px]">
                     <button class="border rounded-lg  border-blue-500 text-blue-500  bg-white  py-1 px-5 text-sm"
                       @click="chageXaxis">적용</button>
                   </div>
@@ -80,7 +80,7 @@
     </div>
     <div class="flex gap-4 px-4 py-2 " style="height: calc(100% - 120px )">
       <section class="container  sm:w-2/6  lg:w-1/6  mx-auto">
-        <div class="overflow-y-auto  max-h-[70vh]">
+        <div class="overflow-y-auto  max-h-[70vh] ">
           <table class=" w-full overflow-x-auto border-separate border-spacing-0   ">
             <thead class="w-full rounded-lg border sticky top-0   ">
               <tr class=" text-xs  text-center text-white  bg-[#6B6B6B]">
@@ -164,7 +164,7 @@
       </button>
     </div>
     <div v-if="errorMessage != null"
-      class="fixed flex items-center w-1/6A bottom-1 left-5 p-4 mb-4 border border-red-500  text-gray-500 bg-red-500 rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
+      class="fixed flex items-center w-1/6 bottom-1 left-5 p-4 mb-4 border border-red-500  text-gray-500 bg-red-500 rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
       role="alert">
       <div
         class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-200 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
@@ -506,8 +506,8 @@ function resetPoints(roomName, value, flag) {
     currDataList[roomName].startPoint = value;
     currDataList[roomName].endPoint = null;
   }
-
 }
+
 /**
  * 주어진 RoomName 에 따라 데이터를 지움
  * @param {*} roomName 병실 이름 
@@ -519,6 +519,13 @@ function deleteBedInList(roomName) {
     }
   }
 }
+
+/**
+ * 침상 추가 
+ * @param {Number} roomBedNum 침상 이름 
+ * @param {Number} startPoint 시작 위치 
+ * @param {Number} endPoint 끝 위치
+ */
 function addBedInList(roomBedNum, startPoint, endPoint) {
   for (let i = startPoint - 1; i < endPoint; i++) {
     if (i == startPoint - 1) {
