@@ -11,8 +11,10 @@
             <div class="hidden sm:ml-6 sm:block">
               <div class="flex  space-x-4">
                 <NavLink to="settingWard">병실 관리</NavLink>
-                <NavLink to="settingAccount">계정 관리</NavLink>
                 <NavLink to="settingSpace">병동 관리</NavLink>
+                <NavLink to="settingAccount">계정 관리</NavLink>
+                <NavLink to="">기기 등록</NavLink>
+                <NavLink to="">공간 관리</NavLink>
                 <NavLink to="login">로그아웃</NavLink>
               </div>
             </div>
