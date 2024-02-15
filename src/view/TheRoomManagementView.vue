@@ -1,12 +1,9 @@
 <template>
-  <baseModal v-if="modalFlag" :modal-name="modalName" :data="modalData" @close-modal="closeModal">
-  </baseModal>
-
   <div class="flex gap-6 px-4 py-2 justify-between">
     <!-- <div class="bounce"></div> -->
     <Listbox as="div" v-model="selectWard">
       <div class="flex">
-        <ListboxLabel class="block text-sm font-medium leading-9  text-gray-900"> 공관 관리 </ListboxLabel>
+        <ListboxLabel class="block text-sm font-medium leading-9  text-gray-900"> 계정 관리 </ListboxLabel>
         <div class="relative ml-4 ">
           <ListboxButton
             class="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 sm:text-sm sm:leading-6">
@@ -55,11 +52,10 @@
           <thead class="w-full rounded-lg border sticky top-0   ">
             <tr class=" text-xs  text-center text-white  bg-[#6B6B6B]">
               <th class="px-1 py-3 rounded-l-lg ">ID</th>
-              <th class="px-1 py-3">이름</th>
-              <th class="px-1 py-3">분류</th>
-              <th class="px-1 py-3">타입</th>
-              <th class="px-1 py-3">병동</th>
-              <th class="px-1 py-3">호실</th>
+              <th class="px-1 py-3">병동 이름</th>
+              <th class="px-1 py-3">침상 수 </th>
+              <th class="px-1 py-3">침상 초과 여부</th>
+              <th class="px-1 py-3">병동 타입</th>
               <th class="px-1 rounded-r-lg  py-3">관리</th>
             </tr>
             <tr>
@@ -68,24 +64,18 @@
           </thead>
           <tbody class="h-5 overflow-auto">
             <tr class="" v-for="item in accountList" :key="item">
-              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.space_id }}</td>
-              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.space_name }}</td>
-              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.space_unit }}</td>
-              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.space_type }}</td>
-              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.space_ward }}</td>
-              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.space_room }}</td>
+              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.room_name }}</td>
+              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.ward_name }}</td>
+              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.room_bedNum }}</td>
+              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.room_isValid }}</td>
+              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.room_type }}</td>
               <td class="px-2 py-1  lg:w-64 border text-md font-semibold text-center">
                 <div class="flex  justify-around">
-                  <button type="button" class="py-1 px-4  text-base font-medium text-white focus:outline-none bg-[#8B8B8B] rounded-lg  border border-[#8B8B8B]
-        hover:bg-white hover:text-[#8B8B8B] hover:border-[#8B8B8B] focus:z-10 focus:ring-4 focus:ring-gray-200"
-                    @click="openModal('paringList', item)">
-                    더보기
-                  </button>
                   <button type="button" class="py-1 px-3 text-base font-medium text-white focus:outline-none bg-[#678FFF] rounded-lg border border-[#678FFF]
-        hover:bg-white hover:text-[#678FFF]  focus:z-10 focus:ring-4 focus:ring-gray-200"
-                    @click="openModal('settingSpace', item)">
+        hover:bg-white hover:text-[#678FFF]  focus:z-10 focus:ring-4 focus:ring-gray-200 ">
                     수정
                   </button>
+
                   <button type="button" class="py-1 px-3  text-base font-medium text-white focus:outline-none bg-red-500 rounded-lg  border border-red-500
         hover:bg-white hover:text-red-500   focus:z-10 focus:ring-4 focus:ring-gray-200">
                     삭제
@@ -98,8 +88,7 @@
       </div>
     </section>
   </div>
-
-
+  <!-- {{ accountList }} -->
   <!-- <div v-if="errorMessage != null"
     class="fixed flex items-center w-1/6A bottom-1 left-5 p-4 mb-4 border border-red-500  text-gray-500 bg-red-500 rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
     role="alert">
@@ -114,44 +103,26 @@
   </div> -->
 </template>
 <script setup>
-import settingSpaceModal from '@/modal/modalitem/settingSpaceModal.vue'
-import baseModal from '@/modal/baseModal.vue';
 import { ref, onBeforeMount, reactive, computed, watch } from 'vue';
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronDownIcon, UserIcon } from '@heroicons/vue/20/solid'
 import ExcelJS from "exceljs";
-
-// modal 
-const modalFlag = ref(false);
-const modalName = ref('');
-let modalData = reactive({ data: 'none' });
-function openModal(name, item) {
-  modalData = item
-  modalName.value = name
-  modalFlag.value = true
-}
-function closeModal() {
-  modalFlag.value = false
-}
-
-
-
-
-
-
 const selectWard = ref(null)
 const wardList = reactive(['61병동', '62병동'])
 
+
 const accountList = reactive([
   {
-    space_id: 'w770001r',
-    space_name: '77병동 약품냉장고',
-    space_unit: 'room',
-    space_type: 'DR',
-    space_ward: '77병동',
-    space_room: '약품준비실',
-    editBy: 'admin',
-  },
+    _id: '659cdf065482a196bb7bb21a',
+    room_name: '1',
+    ward_name: '통원수술센터',
+    editBy: 'ext-linker',
+    room_bedNum: '1',
+    room_isValid: 1,
+    room_type: 'CU',
+    updatedAt: '2024-02-15 11:33:03',
+    createdAt: '2024-01-09 14:52:06'
+  }
 ])
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
@@ -187,6 +158,8 @@ async function loadFile(FileName) {
                 tempObject[headerKeys[index]] = row.values[index + 1];
               }
               addAccount(tempObject)
+              // console.log('header :>> ', tempObject, headerKeys, header);
+              // console.log(row.values.length, rowIndex, row.values)
             }
 
           })
@@ -197,17 +170,19 @@ async function loadFile(FileName) {
     console.error("잘못된 양식의 파일입니다.", error)
   }
 }
-// TODO 나중에 통신으로 데이터추가하게 변경해야함
-
 async function addAccount(tempObject) {
   accountList.push(tempObject)
+  // TODO 나중에 통신으로 데이터추가하게 변경해야함
 
 }
+
+
 
 </script>
 <style scoped>
 /* 파일 입력 필드 스타일 수정 */
 input[type="file"] {
   display: none;
+  /* 원래 버튼 감추기 */
 }
 </style>

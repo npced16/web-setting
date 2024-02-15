@@ -3,15 +3,27 @@
     <div class="modal-content">
       <button class="modal-mask" @click="closeModal"></button>
       <div class="container  p-5">
-        <slot> </slot>
+        <component :is="getCompoent" :data="props.data" @close-modal="closeModal"></component>
       </div>
     </div>
   </Teleport>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits, computed } from 'vue'
+import settingSpaceModal from '@modal/modalItem/settingSpaceModal.vue';
+import paringListModal from '@modal/modalItem/paringListModal.vue';
+const props = defineProps(['modalName', 'data'])
 const emit = defineEmits(['closeModal'])
+const getCompoent = computed(() => {
+  switch (props.modalName) {
+    case 'settingSpace':
+      return settingSpaceModal
+    case 'paringList':
+      return paringListModal
+
+  }
+})
 function closeModal() {
   emit('closeModal')
 }
@@ -22,7 +34,6 @@ function closeModal() {
   z-index: 999;
   background-color: #fff;
   border-radius: 16px;
-
   box-shadow: 0 20px 60px -2px rgb(27 33 58 / 40%);
 }
 

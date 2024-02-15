@@ -1,28 +1,22 @@
 <template>
-	병동 수정하기
-	<div class="overflow-x-auto text-md ">
+	병동 수정하기3233333333333
+	<div class="overflow-x-auto text-md font-semibold">
 		<table class="min-w-full divide-y divide-gray-200">
 			<thead class="bg-gray-100">
 				<tr>
-					<th v-for="(value) in labels" :key="value"
+					<th v-for="(value, key) in spaceData" :key="key"
 						class="px-4 py-4  border-x  text-lg font-semibold  text-gray-700 box-borde">
-						{{ value }}
+						{{ labels[key] }}
 					</th>
 				</tr>
 			</thead>
 			<tbody class="bg-white divide-y divide-gray-200">
 				<tr>
-					<td class="px-2 py-1  border text-md  text-center">{{ spaceData?.space_id }}</td>
-					<td class="px-2 py-1  border text-md  text-center">{{ spaceData?.space_name }}</td>
-					<td class="px-2 py-1  border text-md  text-center">{{ spaceData?.space_unit }}</td>
-					<td class="px-2 py-1  border text-md  text-center">{{ spaceData?.space_type }}</td>
-					<td class="px-2 py-1  border text-md  text-center">{{ spaceData?.space_ward }}</td>
-					<td class="px-2 py-1  border text-md font-semibold text-center text-[#678fff] p-0">
-						<input type="text" :id="'space_room'" v-model="spaceData.space_room"
-							class="w-full h-full p-2 border border-white   focus:outline-none text-center  focus:ring-indigo-500 focus:border-indigo-500">
-						<!-- :placeholder="key === 'space_unit(hospital,ward,room,bed)' ? '(hospital, ward, room, bed)' -->
-						<!-- : key === 'space_type(DR,CU)' ? '(DR,CU)' : ''" -->
-						<!-- {{ spaceData?.space_room }} -->
+					<td v-for="(value, key) in spaceData" :key="key" class="border whitespace-nowrap">
+						<input type="text" :id="key" v-model="spaceData[key]"
+							class="w-full h-full p-2 focus:outline-none text-center  focus:ring-indigo-500 focus:border-indigo-500"
+							:placeholder="key === 'space_unit(hospital,ward,room,bed)' ? '(hospital, ward, room, bed)'
+								: key === 'space_type(DR,CU)' ? '(DR,CU)' : ''">
 					</td>
 				</tr>
 			</tbody>
@@ -45,25 +39,28 @@ function closeModal() {
 }
 
 // 데이터 설정
-
 const spaceData = reactive({ ...props.data });
 const labels = {
 	space_id: "아이디",
 	space_name: "이름",
-	space_unit: "병동 분류",
-	space_type: "병동 타입",
-	// space_hospital: "병원 명",
-	// space_ward: "병동 명 ",
-	space_room: "병동 명",
-	space_bed: "호실 명",
+	'space_type(DR,CU)': "타입",
+	space_hospital: "병원 명",
+	space_ward: "병동 명 ",
+	space_room: "호실 명",
+	space_bed: "침상 수",
+	'space_unit(hospital,ward,room,bed)': "병동 타입"
 }
 
-
+function getParingData() {
+	// 페어링데이터 가져오기
+}
 
 function saveChanges() {
 
 }
+
 onBeforeMount(() => {
+	getParingData()
 })
 </script>
 <style scoped>
@@ -130,9 +127,5 @@ select {
 	height: 38px;
 	font: normal normal 500 14px NotoSans;
 	color: #7c7c7c;
-}
-
-td {
-	-webkit-app-region: no-drag;
 }
 </style>
