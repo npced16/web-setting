@@ -1,27 +1,26 @@
 <template>
-	<h3>더보기</h3>
-	<div class="overflow-x-auto text-md font-semibold">
+	Rooom 수정하기
+	<div class="overflow-x-auto text-md ">
 		<table class="min-w-full divide-y divide-gray-200">
 			<thead class="bg-gray-100">
 				<tr>
-					<th v-for="(value, key) in spaceData" :key="key"
+					<th v-for="(value) in labels" :key="value"
 						class="px-4 py-4  border-x  text-lg font-semibold  text-gray-700 box-borde">
-						{{ labels[key] }}
+						{{ value }}
 					</th>
 				</tr>
 			</thead>
 			<tbody class="bg-white divide-y divide-gray-200">
 				<tr>
-					<td class="border whitespace-nowrap">
-						<input type="text" :id="key" v-model="spaceData.space_id"
-							class="w-full h-full p-2 focus:outline-none text-center  focus:ring-indigo-500 focus:border-indigo-500">
-					</td>
-					<td v-for="(value, key) in spaceData" :key="key" class="border whitespace-nowrap">
-						<input type="text" :id="key" v-model="spaceData[key]"
-							class="w-full h-full p-2 focus:outline-none text-center  focus:ring-indigo-500 focus:border-indigo-500"
-							:placeholder="key === 'space_unit(hospital,ward,room,bed)' ? '(hospital, ward, room, bed)'
-								: key === 'space_type(DR,CU)' ? '(DR,CU)' : ''">
-					</td>
+					<td class="px-2 py-1  border text-md  text-center">{{ spaceData?.room_name }}</td>
+					<td class="px-2 py-1  border text-md  text-center">{{ spaceData?.ward_name }}</td>
+					<td class="px-2 py-1  border text-md  text-center">{{ spaceData?.room_bedNum }}</td>
+					<td class="px-2 py-1  border text-md  text-center">{{ spaceData?.room_isValid }}</td>
+					<td class="px-2 py-1  border text-md  text-center">{{ spaceData?.room_type }}</td>
+					<!-- <td class="px-2 py-1  border text-md font-semibold text-center text-[#678fff] p-0"> -->
+					<!-- <input type="text" :id="'space_room'" v-model="spaceData.space_room" -->
+					<!-- class="w-full h-full p-2 border border-white   focus:outline-none text-center  focus:ring-indigo-500 focus:border-indigo-500"> -->
+					<!-- </td> -->
 				</tr>
 			</tbody>
 		</table>
@@ -45,26 +44,20 @@ function closeModal() {
 // 데이터 설정
 const spaceData = reactive({ ...props.data });
 const labels = {
-	space_id: "아이디",
-	space_name: "이름",
-	'space_type(DR,CU)': "타입",
-	space_hospital: "병원 명",
-	space_ward: "병동 명 ",
-	space_room: "호실 명",
-	space_bed: "침상 수",
-	'space_unit(hospital,ward,room,bed)': "병동 타입"
+	room_name: "ID",
+	ward_name: "병동이름",
+	room_bedNum: "침상 수 ",
+	room_isValid: "침상 초과 여부",
+	room_type: "병동 타입",
 }
 
-function getParingData() {
-	// 페어링데이터 가져오기
-}
+
 
 function saveChanges() {
 
 }
 
 onBeforeMount(() => {
-	getParingData()
 })
 </script>
 <style scoped>
@@ -131,5 +124,9 @@ select {
 	height: 38px;
 	font: normal normal 500 14px NotoSans;
 	color: #7c7c7c;
+}
+
+td {
+	-webkit-app-region: no-drag;
 }
 </style>

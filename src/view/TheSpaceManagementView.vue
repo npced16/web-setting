@@ -87,7 +87,7 @@
                     수정
                   </button>
                   <button type="button" class="py-1 px-3  text-base font-medium text-white focus:outline-none bg-red-500 rounded-lg  border border-red-500
-        hover:bg-white hover:text-red-500   focus:z-10 focus:ring-4 focus:ring-gray-200">
+        hover:bg-white hover:text-red-500   focus:z-10 focus:ring-4 focus:ring-gray-200" @click="">
                     삭제
                   </button>
                 </div>
@@ -114,7 +114,6 @@
   </div> -->
 </template>
 <script setup>
-import settingSpaceModal from '@/modal/modalitem/settingSpaceModal.vue'
 import baseModal from '@/modal/baseModal.vue';
 import { ref, onBeforeMount, reactive, computed, watch } from 'vue';
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'

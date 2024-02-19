@@ -338,7 +338,6 @@ function getContents(contents) {
           }
         }
 
-
         if (data.type == 'bed') {
           currDataList[data.name].endPoint = numberToAlphabet(parseInt(item) + size) + count
           currDataList[data.name].end = currDataIndex
@@ -346,7 +345,6 @@ function getContents(contents) {
         }
 
         currDataIndex++
-
       }
     }
     size += content.size // 다음 table 시 size 설정용

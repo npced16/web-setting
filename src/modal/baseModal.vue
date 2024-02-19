@@ -10,9 +10,10 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed } from 'vue'
+import { defineProps, defineEmits, computed, onMounted, onUnmounted } from 'vue'
 import settingSpaceModal from '@modal/modalItem/settingSpaceModal.vue';
 import paringListModal from '@modal/modalItem/paringListModal.vue';
+import settingRoomModal from './modalItem/settingRoomModal.vue';
 const props = defineProps(['modalName', 'data'])
 const emit = defineEmits(['closeModal'])
 const getCompoent = computed(() => {
@@ -21,12 +22,30 @@ const getCompoent = computed(() => {
       return settingSpaceModal
     case 'paringList':
       return paringListModal
+    case 'settingRoomModal':
+      return settingRoomModal
 
   }
 })
 function closeModal() {
   emit('closeModal')
 }
+
+const closeOnEscape = (e) => {
+  if (e.key === 'Escape') {
+    closeModal();
+  }
+};
+
+onMounted(() => document.addEventListener('keydown', closeOnEscape));
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', closeOnEscape);
+  document.body.style.overflow = null;
+});
+
+
+
 </script>
 
 <style   scoped>

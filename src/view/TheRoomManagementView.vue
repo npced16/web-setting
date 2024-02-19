@@ -1,4 +1,6 @@
 <template>
+  <baseModal v-if="modalFlag" :modal-name="modalName" :data="modalData" @close-modal="closeModal">
+  </baseModal>
   <div class="flex gap-6 px-4 py-2 justify-between">
     <!-- <div class="bounce"></div> -->
     <Listbox as="div" v-model="selectWard">
@@ -63,7 +65,7 @@
             </tr>
           </thead>
           <tbody class="h-5 overflow-auto">
-            <tr class="" v-for="item in accountList" :key="item">
+            <tr class="" v-for="item in roomList" :key="item">
               <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.room_name }}</td>
               <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.ward_name }}</td>
               <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.room_bedNum }}</td>
@@ -72,7 +74,8 @@
               <td class="px-2 py-1  lg:w-64 border text-md font-semibold text-center">
                 <div class="flex  justify-around">
                   <button type="button" class="py-1 px-3 text-base font-medium text-white focus:outline-none bg-[#678FFF] rounded-lg border border-[#678FFF]
-        hover:bg-white hover:text-[#678FFF]  focus:z-10 focus:ring-4 focus:ring-gray-200 ">
+        hover:bg-white hover:text-[#678FFF]  focus:z-10 focus:ring-4 focus:ring-gray-200"
+                    @click="openModal('settingRoomModal', item)">
                     수정
                   </button>
 
@@ -103,15 +106,33 @@
   </div> -->
 </template>
 <script setup>
+import baseModal from '@/modal/baseModal.vue';
+
 import { ref, onBeforeMount, reactive, computed, watch } from 'vue';
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronDownIcon, UserIcon } from '@heroicons/vue/20/solid'
 import ExcelJS from "exceljs";
+
+// modal 
+const modalFlag = ref(false);
+const modalName = ref('');
+let modalData = reactive({ data: 'none' });
+function openModal(name, item) {
+  modalData = item
+  modalName.value = name
+  modalFlag.value = true
+}
+function closeModal() {
+  modalFlag.value = false
+}
+
+
+
 const selectWard = ref(null)
 const wardList = reactive(['61병동', '62병동'])
 
 
-const accountList = reactive([
+const roomList = reactive([
   {
     _id: '659cdf065482a196bb7bb21a',
     room_name: '1',
@@ -171,7 +192,7 @@ async function loadFile(FileName) {
   }
 }
 async function addAccount(tempObject) {
-  accountList.push(tempObject)
+  roomList.push(tempObject)
   // TODO 나중에 통신으로 데이터추가하게 변경해야함
 
 }
