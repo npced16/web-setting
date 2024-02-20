@@ -1,13 +1,13 @@
 
 <template>
-  <div class="flex flex-col h-screen">
-    <TitleVue v-if="route.fullPath != '/login'" />
-    <RouterView></RouterView>
+  <div class="flex flex-col h-screen  relative">
+    <TitleVue class="sticky" v-if="route.fullPath != '/login'" />
+    <RouterView class=""></RouterView>
   </div>
 </template>
 <script setup>
 import TitleVue from '@/components/title.vue';
-import sidebar from './components/sidebar.vue';
+// import sidebar from './components/sidebar.vue';
 import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();

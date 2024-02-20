@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="to" class="rounded-md px-3 py-2  text-base  font-medium text-white"
+  <router-link :to="to" class="rounded-md px-3 py-2  text-base  font-medium text-white w-full sm:w-full"
     :class="[isActive ? 'bg-[#8C8C8C] ' : ' hover:bg-[#6C6C6C]']">
     <slot></slot>
   </router-link>

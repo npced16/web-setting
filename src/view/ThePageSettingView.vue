@@ -1,8 +1,7 @@
 <template>
-  <div class="">
-    <div class="flex gap-6 px-4 py-2 h-[80px] ">
-      <div class="sm:w-2/6  lg:w-1/6 ">
-        <!-- <div class="bounce"></div> -->
+  <div class="flex flex-col ">
+    <header class="flex gap-6 px-4 py-2  sm:flex-row flex-col">
+      <div class="w-full  sm:w-3/12 min-w-[240px]">
         <Listbox as="div" v-model="selectWard">
           <ListboxLabel class="block text-sm font-medium leading-6 text-gray-900">병동 </ListboxLabel>
           <div class="relative mt-2">
@@ -39,13 +38,14 @@
           </div>
         </Listbox>
       </div>
-      <div class="sm:w-4/6  lg:w-5/6 ">
+      <div class="w-full ">
         <table class="w-full border  rounded-xl   shadow-md ">
           <thead>
-            <tr class="text-md font-semibold tracking-wide text-left text-gray-900 ">
-              <th class="text-center border-l border-b w-1/6">전체 페이지 수 </th>
-              <th class="text-center border-l border-b w-2/6">세로 최대 카드 수 </th>
-              <th class="text-center border-l border-b w-3/6" :colspan="pageNumber">페이지 별 가로 길이</th>
+            <tr class="text-md font-semibold tracking-wide text-left text-gray-900">
+              <th class="text-center border-l border-b w-1/6 truncate">전체 페이지 수</th>
+              <th class="text-center border-l border-b w-2/6 truncate">세로 최대 카드 수</th>
+              <th class="text-center border-l border-b w-3/6 overflow-hidden truncate" :colspan="pageNumber">페이지 별 가로 길이
+              </th>
             </tr>
           </thead>
           <tbody class="">
@@ -77,9 +77,10 @@
           </tbody>
         </table>
       </div>
-    </div>
-    <div class="flex gap-4 px-4 py-2 " style="height: calc(100% - 120px )">
-      <section class="container  sm:w-2/6  lg:w-1/6  mx-auto">
+    </header>
+
+    <body class="flex gap-4 px-4 py-2   sm:flex-row flex-col">
+      <section class="w-full  sm:w-3/12  border-b-2 border-black pb-10 sm:border-0 min-w-[240px]  ">
         <div class="overflow-y-auto  max-h-[70vh] ">
           <table class=" w-full overflow-x-auto border-separate border-spacing-0   ">
             <thead class="w-full rounded-lg border sticky top-0   ">
@@ -118,10 +119,10 @@
           </table>
         </div>
       </section>
-      <div class=" sm:w-4/6  lg:w-5/6 overflow-auto">
+      <div class="w-full min-w-[230px] overflow-auto">
         <div class="flex flex-auto w-full flex-wrap h-full  max-h-[70vh] ">
-          <div v-for="columnIndex in pageNumber" :key="columnIndex"
-            :class="[pageNumber == 1 ? 'w-full' : 'w-3/6', pageNumber <= 2 ? 'h-full' : '']">
+          <div v-for="columnIndex in pageNumber" :key="columnIndex" class="  "
+            :class="[pageNumber == 1 ? 'w-full ' : 'w-full sm:w-3/6', pageNumber <= 2 ? 'h-full' : '']">
             <div class="flex">
               <div class="w-1/3 text-center" v-for=" index in Number(yAxis[columnIndex - 1])">
                 {{ numberToAlphabet(getStartColumnForPageIndex(columnIndex) - 1 + index) }}
@@ -152,8 +153,8 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="w-full flex  justify-end p-4  gap-2" style="height: 80px;">
+    </body>
+    <footer class="w-full flex justify-end p-4 pb-0 gap-2">
       <button type="button" class="py-2.5 px-8  text-base font-medium text-white focus:outline-none bg-[#8B8B8B] rounded-lg  border border-[#8B8B8B]
         hover:bg-white hover:text-[#8B8B8B] hover:border-[#8B8B8B] focus:z-10 focus:ring-4 focus:ring-gray-200">
         취소
@@ -163,7 +164,8 @@
         @click="savePageData">
         저장
       </button>
-    </div>
+    </footer>
+
     <div v-if="errorMessage != null"
       class="fixed flex items-center w-1/6 bottom-1 left-5 p-4 mb-4 border border-red-500  text-gray-500 bg-red-500 rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
       role="alert">
