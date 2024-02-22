@@ -15,6 +15,7 @@ const routes = [
 				path: "/settingPage",
 				name: "settingPage",
 				component: ThePageSettingView,
+				props: (route) => ({ ...route.params, id: "" }), // 기존 경로 유지하면서 props 전달
 			},
 			{
 				path: "/settingWard",

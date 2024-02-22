@@ -2,7 +2,7 @@
   <baseModal v-if="modalFlag" :modal-name="modalName" :data="modalData" @close-modal="closeModal">
   </baseModal>
 
-  <div class="flex gap-6 px-4 py-2 justify-between">
+  <div class="flex sm:gap-6 px-4 py-2 justify-between">
     <!-- <div class="bounce"></div> -->
     <Listbox as="div" v-model="selectWard">
       <div class="flex">
@@ -43,7 +43,7 @@
       </div>
     </Listbox>
     <label
-      class="cursor-pointer border text-center items-center rounded-lg border-blue-500 px-2 py-1 bg-white text-blue-500 hover:text-white hover:bg-blue-500">
+      class="cursor-pointer border text-center items-center rounded-lg border-blue-500 sm:px-2 py-1 bg-white text-blue-500 hover:text-white hover:bg-blue-500">
       계정 일괄 등록
       <input type="file" @change="handleFileUpload" accept=".xlsx" />
     </label>

@@ -2,7 +2,7 @@
 <template>
   <div class="flex flex-col h-screen  relative">
     <TitleVue class="sticky" v-if="route.fullPath != '/login'" />
-    <RouterView class=""></RouterView>
+    <RouterView></RouterView>
   </div>
 </template>
 <script setup>

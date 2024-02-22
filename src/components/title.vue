@@ -26,7 +26,6 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </div>
-
           </div>
           <div
             class="hidden sm:block absolute inset-y-0 right-0  items-end pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 text-white">

@@ -8,7 +8,8 @@
             <ListboxButton
               class="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 sm:text-sm sm:leading-6">
               <span class="flex items-center">
-                <span class="ml-3 block truncate">{{ selectWard }}</span>
+                <span v-if="selectWard != null" class="ml-3 block truncate">{{ selectWard }}</span>
+                <span v-else class="block truncate">병동을 선택해 주세요</span>
               </span>
               <span class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
                 <ChevronDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -186,6 +187,9 @@ import { ref, onBeforeMount, reactive, computed, watch } from 'vue';
 import axios from 'axios';
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronDownIcon } from '@heroicons/vue/20/solid'
+import { useRoute, useRouter } from 'vue-router';
+const route = useRoute();
+
 const yAxis = reactive([3, 3, 3, 3])
 const xAxis = ref(12)
 const tempXData = ref(xAxis.value)
@@ -578,7 +582,7 @@ function isEmptyBed(startPoint, endPoint) {
 }
 
 const wardList = ["61병동", "63병동", "133병동", "81병동"]
-const selectWard = ref('병동 선택')
+const selectWard = ref(route.query.id)
 
 watch((pageNumber), () => {
   while (pageNumber.value > yAxis.length) {

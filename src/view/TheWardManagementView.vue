@@ -22,8 +22,11 @@
                 <div class="flex  justify-around">
                   <button type="button" class="py-1 px-3 text-base font-medium text-white focus:outline-none bg-[#678FFF] rounded-lg border border-[#678FFF]
         hover:bg-white hover:text-[#678FFF]  focus:z-10 focus:ring-4 focus:ring-gray-200">
-                    수정
+                    <router-link :to="getLinkTo(item.ward_name)">
+                      수정 </router-link>
+
                   </button>
+
                   <button type="button" class="py-1 px-3  text-base font-medium text-white focus:outline-none bg-red-500 rounded-lg  border border-red-500
         hover:bg-white hover:text-red-500   focus:z-10 focus:ring-4 focus:ring-gray-200">
                     삭제
@@ -50,6 +53,11 @@ const wardList = reactive([
     createdAt: '2024-01-09 14:52:06'
   }
 ])
+
+function getLinkTo(wardName) {
+  console.log('wardName :>> ', wardName);
+  return { name: 'settingPage', query: { id: wardName } };
+}
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (file) {

@@ -8,9 +8,12 @@
 <script setup>
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-const props = defineProps(['to', 'path']);
+const props = defineProps(['to', 'path', 'id']);
 const route = useRoute()
-const isActive = computed(() => { return route.fullPath == '/' + props.to })
+const isActive = computed(() => {
+  const fullPath = route.fullPath.split('?')[0]; // 파라미터를 제외한 경로 부분만 추출
+  return fullPath == '/' + props.to;
+});
 
 </script>
 
