@@ -155,7 +155,7 @@
         </div>
       </div>
     </body>
-    <footer class="w-full flex justify-end p-4 pb-0 gap-2">
+    <footer class="w-full flex justify-end p-4 gap-2">
       <button type="button" class="py-2.5 px-8  text-base font-medium text-white focus:outline-none bg-[#8B8B8B] rounded-lg  border border-[#8B8B8B]
         hover:bg-white hover:text-[#8B8B8B] hover:border-[#8B8B8B] focus:z-10 focus:ring-4 focus:ring-gray-200">
         취소

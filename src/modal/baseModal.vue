@@ -2,7 +2,7 @@
   <Teleport to='#modal'>
     <div class="modal-content">
       <button class="modal-mask" @click="closeModal"></button>
-      <div class="container  p-5">
+      <div class="modal-box  p-5">
         <component :is="getCompoent" :data="props.data" @close-modal="closeModal"></component>
       </div>
     </div>
@@ -49,7 +49,7 @@ onUnmounted(() => {
 </script>
 
 <style   scoped>
-.container {
+.modal-box {
   z-index: 999;
   background-color: #fff;
   border-radius: 16px;

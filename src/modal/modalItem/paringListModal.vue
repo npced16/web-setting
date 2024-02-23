@@ -22,6 +22,7 @@
 							:placeholder="key === 'space_unit(hospital,ward,room,bed)' ? '(hospital, ward, room, bed)'
 								: key === 'space_type(DR,CU)' ? '(DR,CU)' : ''">
 					</td>
+					<td>{{ demodata }}</td>
 				</tr>
 			</tbody>
 		</table>
@@ -33,6 +34,7 @@
 		<button @click="saveChanges" class="py-1 px-3 text-base font-medium text-white focus:outline-none bg-[#678FFF] rounded-lg border border-[#678FFF]
         hover:bg-white hover:text-[#678FFF]  focus:z-10 focus:ring-4 focus:ring-gray-200">수정하기</button>
 	</div>
+	{{ props.data?.space_id }}
 </template>
 <script setup>
 import { ref, reactive, onBeforeMount, defineEmits, watch, computed } from 'vue';
@@ -40,6 +42,43 @@ const props = defineProps(['data']);
 const emit = defineEmits(['closeModal'])
 function closeModal() {
 	emit('closeModal')
+}
+const demodata = {
+	_id: '6524f48095a337b0fb0d525f',
+	space_id: 'w770001r',
+	pair_type: 'envMonitoring',
+	setting: {
+		equipment_type: 'chois/cms',
+		cms_maxTemp: 30,
+		cms_minTemp: 0,
+		cms_maxHumid: 80,
+		cms_minHumid: 0,
+		pair_name: '77병동 약품냉장고'
+	},
+	equipment: '6524f432a07146f0f0568137',
+	pair_alarm: [
+		{
+			_id: '63e9fbe11d175837d936e860',
+			alarm_code: 'CMS0003',
+			alarm_level: '1',
+			alarm_name: 'signal_loss',
+			alarm_type: 'chois/cms',
+			alarm_tag: 'environment',
+			alarm_isValid: true,
+			editBy: 'admin'
+		}
+	],
+	pair_data: {
+		serial: 'D8714DB3FC8F',
+		temperature: 6.8,
+		humidity: 50.69,
+		battery: 100,
+		timestamp: '2023-12-15T01:35:31.820Z',
+		alarm: []
+	},
+	status: 'onprogress',
+	editBy: null,
+	createdAt: '2023-10-10T06:51:44.254Z'
 }
 
 // 데이터 설정

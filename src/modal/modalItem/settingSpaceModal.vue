@@ -4,19 +4,18 @@
 		<table class="min-w-full divide-y divide-gray-200">
 			<thead class="bg-gray-100">
 				<tr>
-					<th v-for="(value) in labels" :key="value"
-						class="px-4 py-4  border-x  text-lg font-semibold  text-gray-700 box-borde">
+					<th v-for="(value) in labels" :key="value" class="px-4 py-4  border-2  text-lg font-semibold">
 						{{ value }}
 					</th>
 				</tr>
 			</thead>
 			<tbody class="bg-white divide-y divide-gray-200">
 				<tr>
-					<td class="px-2 py-1  border text-md  text-center">{{ spaceData?.space_id }}</td>
-					<td class="px-2 py-1  border text-md  text-center">{{ spaceData?.space_name }}</td>
-					<td class="px-2 py-1  border text-md  text-center">{{ spaceData?.space_unit }}</td>
-					<td class="px-2 py-1  border text-md  text-center">{{ spaceData?.space_type }}</td>
-					<td class="px-2 py-1  border text-md  text-center">{{ spaceData?.space_ward }}</td>
+					<td class="px-2 py-1  border text-md  text-center bg-slate-100 text-gray-500">{{ spaceData?.space_id }}</td>
+					<td class="px-2 py-1  border text-md  text-center bg-slate-100 text-gray-500">{{ spaceData?.space_name }}</td>
+					<td class="px-2 py-1  border text-md  text-center bg-slate-100 text-gray-500">{{ spaceData?.space_unit }}</td>
+					<td class="px-2 py-1  border text-md  text-center bg-slate-100 text-gray-500">{{ spaceData?.space_type }}</td>
+					<td class="px-2 py-1  border text-md  text-center bg-slate-100 text-gray-500">{{ spaceData?.space_ward }}</td>
 					<td class="px-2 py-1  border text-md font-semibold text-center text-[#678fff] p-0">
 						<input type="text" :id="'space_room'" v-model="spaceData.space_room"
 							class="w-full h-full p-2 border border-white   focus:outline-none text-center  focus:ring-indigo-500 focus:border-indigo-500">

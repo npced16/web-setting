@@ -75,18 +75,18 @@
               <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.space_ward }}</td>
               <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.space_room }}</td>
               <td class="px-2 py-1  lg:w-64 border text-md font-semibold text-center">
-                <div class="flex  justify-around">
-                  <button type="button" class="py-1 px-4  text-base font-medium text-white focus:outline-none bg-[#8B8B8B] rounded-lg  border border-[#8B8B8B]
+                <div class="flex flex-col sm:flex-row  justify-around">
+                  <button type="button" class=" sm:py-1 px-3  text-base font-medium text-white focus:outline-none bg-[#8B8B8B] rounded-lg  border border-[#8B8B8B]
         hover:bg-white hover:text-[#8B8B8B] hover:border-[#8B8B8B] focus:z-10 focus:ring-4 focus:ring-gray-200"
                     @click="openModal('paringList', item)">
-                    더보기
+                    페어링
                   </button>
-                  <button type="button" class="py-1 px-3 text-base font-medium text-white focus:outline-none bg-[#678FFF] rounded-lg border border-[#678FFF]
+                  <button type="button" class="sm:py-1 px-3 text-base font-medium text-white focus:outline-none bg-[#678FFF] rounded-lg border border-[#678FFF]
         hover:bg-white hover:text-[#678FFF]  focus:z-10 focus:ring-4 focus:ring-gray-200"
                     @click="openModal('settingSpace', item)">
                     수정
                   </button>
-                  <button type="button" class="py-1 px-3  text-base font-medium text-white focus:outline-none bg-red-500 rounded-lg  border border-red-500
+                  <button type="button" class="sm:py-1 px-3  text-base font-medium text-white focus:outline-none bg-red-500 rounded-lg  border border-red-500
         hover:bg-white hover:text-red-500   focus:z-10 focus:ring-4 focus:ring-gray-200" @click="">
                     삭제
                   </button>
@@ -98,7 +98,6 @@
       </div>
     </section>
   </div>
-
 
   <!-- <div v-if="errorMessage != null"
     class="fixed flex items-center w-1/6A bottom-1 left-5 p-4 mb-4 border border-red-500  text-gray-500 bg-red-500 rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
@@ -150,7 +149,17 @@ const accountList = reactive([
     space_ward: '77병동',
     space_room: '약품준비실',
     editBy: 'admin',
-  },
+  }, {
+    space_id: 'w770001b',
+    space_name: '77병동 약품냉장고',
+    space_unit: 'bed',
+    space_type: 'DR',
+    editBy: 'admin',
+    createdAt: '2023-10-10T06:39:34.697Z',
+    space_ward: '77병동',
+    space_room: '약품준비실',
+    space_bed: '1'
+  }
 ])
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
