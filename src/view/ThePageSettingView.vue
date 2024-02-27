@@ -95,14 +95,14 @@
               </tr>
             </thead>
             <tbody class="">
-              <tr class="" v-for="(list, index) in itemList.data" :key="list">
+              <tr class="" v-for="(list, index) in itemList" :key="list">
                 <td class="px-2 py-1 w-16 border "
-                  :class="[index == 0 ? 'rounded-ss-lg  ' : index == itemList.data.length - 1 ? 'rounded-es-lg' : '']">
+                  :class="[index == 0 ? 'rounded-ss-lg  ' : index == itemList.length - 1 ? 'rounded-es-lg' : '']">
                   <div class="font-semibold text-center">{{ convertToRoomNumber(list.room_name) }}</div>
                 </td>
                 <td class="px-2 py-1 w-16 border text-md font-semibold text-center">{{ list.room_bedNum }}</td>
                 <td class="px-2 py-1 border text-xs h-full"
-                  :class="[index == 0 ? 'rounded-se-lg' : index == itemList.data.length - 1 ? 'rounded-ee-lg' : '']">
+                  :class="[index == 0 ? 'rounded-se-lg' : index == itemList.length - 1 ? 'rounded-ee-lg' : '']">
                   <div class="w-full h-full flex items-center justify-center">
                     <input class="w-full border border-1 h-8 border-gray-300 leading-tight rounded-md text-center"
                       :value="currDataList[list.room_name]?.startPoint"
@@ -188,8 +188,9 @@ import axios from 'axios';
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronDownIcon } from '@heroicons/vue/20/solid'
 import { useRoute, useRouter } from 'vue-router';
+import { useClientStore } from '@/store/client'
+const clientStore = useClientStore();
 const route = useRoute();
-
 const yAxis = reactive([3, 3, 3, 3])
 const xAxis = ref(12)
 const tempXData = ref(xAxis.value)
@@ -202,35 +203,10 @@ function chageXaxis() {
     currDataList[item].endPoint = null
     currDataList[item].startPoint = null
   }
+
 }
 
-const contents =
-  [
-    {
-      "size": 3,
-      "col":
-        [
-          [{ "type": "room", "name": "2" }, { "type": "bed", "name": "2" }, { "type": "bed", "name": "2" }, "", "",
-            "", { "type": "room", "name": "3" }, { "type": "bed", "name": "3" }, { "type": "bed", "name": "3" }, { "type": "bed", "name": "3" },
-          { "type": "bed", "name": "3" }, { "type": "bed", "name": "3" }
-          ],
-          [
-            { "type": "room", "name": "5" }, { "type": "bed", "name": "5" }, { "type": "bed", "name": "5" }, { "type": "bed", "name": "5" }, { "type": "bed", "name": "5" },
-            { "type": "bed", "name": "5" }, { "type": "room", "name": "6" }, { "type": "bed", "name": "6" }, { "type": "bed", "name": "6" }, "",
-            "", ""
-          ],
-          [
-            { "type": "room", "name": "7" }, { "type": "bed", "name": "7" }, "", "", "",
-            "", { "type": "room", "name": "10" }, { "type": "bed", "name": "10" }, { "type": "bed", "name": "10" }, "",
-            "", ""
-          ]
-        ]
-    },
-    {
-      "size": 3, "col": [[{ "type": "room", "name": "12" }, { "type": "bed", "name": "12" }, "", "", "", "", { "type": "room", "name": "13" }, { "type": "bed", "name": "13" }, "", "", "", ""], [{ "type": "room", "name": "15" }, { "type": "bed", "name": "15" },
-      { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "bed", "name": "15" }, { "type": "room", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, { "type": "bed", "name": "16" }, "", ""], [{ "type": "room", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, { "type": "bed", "name": "17" }, "", "", "", "", "", ""]]
-    }
-  ]
+const temp = reactive({ data: [] })
 
 function handlerDateInput(index) {
   const inputValue = yAxis[index];
@@ -312,18 +288,56 @@ function getStartColumnForPageIndex(pageIndex) {
   return sumPage
 }
 
-const currDataList = reactive({})
+// 현재 병동에 해당하는 데이터
+let currDataList = reactive({})
 
-function getContents(contents) {
+
+async function getContents() {
+  const payload = {
+    key: clientStore.key
+  }
+  const config = {
+    method: "get",
+    url: clientStore.getClinetSettingUrl() + `?key=${payload.key}`
+  };
+  const temp = await axios(config).then((res) => {
+    console.log('res.data :>> ', res.data.data[3].ward_name);
+    return res.data.data[3].contents
+  })
+  calcContent(temp)
+}
+async function getContentsItem() {
+  const payload = {
+    key: clientStore.key
+  }
+  const config = {
+    method: "get",
+    url: clientStore.getClinetItemSettingUrl() + `?key=${payload.key}`
+  };
+  itemList.value = await axios(config).then((res) => {
+    console.log('res :>> ', res.data.data.ward["51병동"], res.data.data.ward);
+    return res.data.data.ward["51병동"]
+  })
+  // itemList.value.sort((a, b) => {
+  //   const bedNumA = parseInt(a.room_name);
+  //   const bedNumB = parseInt(b.room_name);
+  //   return bedNumA - bedNumB;
+  // });
+
+  // .find((data) => data === "51병동")
+}
+function calcContent(temp) {
   let size = 0
   let currDataIndex = 0
-  if (!contents) return
-  for (const content of contents) {
+  const Demo = JSON.parse(temp)
+  console.log('object :>> ', Demo);
+  // if (!temp.data) return); 
+  for (const content of Demo) {
+
     for (const item in content.col) {
       let count = 0 //
       for (const data of content.col[item]) {
         ++count
-
         if (data.type == 'room') {
           if (!currDataList[data.name]) {
             currDataList[data.name] = {
@@ -343,20 +357,17 @@ function getContents(contents) {
             }
           }
         }
-
         if (data.type == 'bed') {
           currDataList[data.name].endPoint = numberToAlphabet(parseInt(item) + size) + count
           currDataList[data.name].end = currDataIndex
           currDataArray[currDataIndex] = { type: 'bed', name: data.name }
         }
-
         currDataIndex++
       }
     }
     size += content.size // 다음 table 시 size 설정용
   }
 }
-
 
 function numberToAlphabet(number) {
   if (parseInt(number) >= 26) {
@@ -368,65 +379,28 @@ function numberToAlphabet(number) {
 }
 
 function settingContents() {
-  for (const list of itemList.value.data) {
-    if (!currDataList[list.room_name] && list.room_name) {
-      currDataList[list.room_name] = {
-        startPoint: null,
-        endPoint: null
+  if (itemList.value) {
+    for (const list of itemList.value) {
+      if (!currDataList[list.room_name] && list.room_name) {
+        currDataList[list.room_name] = {
+          startPoint: null,
+          endPoint: null
+        }
       }
     }
+    itemList.value.sort((a, b) => {
+      const bedNumA = parseInt(a.room_name);
+      const bedNumB = parseInt(b.room_name);
+      return bedNumA - bedNumB;
+    });
   }
 }
 /**
  *  병실의 목록 가져오기
  */
 const itemList = ref({
-  "data": [{
-    "_id": "65a48e674a64efd1ca01c37d",
-    "room_name": "3", "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "5", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
-  },
-  {
-    "_id": "65a48e674a64efd1ca01c37f", "room_name": "6", "ward_name": "63병동",
-    "editBy": "ext-linker", "room_bedNum": "2", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
-  },
-  {
-    "_id": "65a48e674a64efd1ca01c380", "room_name": "5", "ward_name": "63병동",
-    "editBy": "ext-linker", "room_bedNum": "5",
-    "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
-  }, {
-    "_id": "65a48e674a64efd1ca01c386", "room_name": "7", "ward_name": "63병동",
-    "editBy": "ext-linker", "room_bedNum": "1", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
-  },
-  {
-    "_id": "65a48e674a64efd1ca01c388", "room_name": "10",
-    "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "2", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
-  },
-  {
-    "_id": "65a48e674a64efd1ca01c389",
-    "room_name": "12", "ward_name": "63병동",
-    "editBy": "ext-linker", "room_bedNum": "1", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
-  }, {
-    "_id": "65a48e674a64efd1ca01c38b", "room_name": "15"
-    , "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "5", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
-  }, {
-    "_id": "65a48e674a64efd1ca01c38c", "room_name": "13",
-    "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "1", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
-  }, {
-    "_id": "65a48e674a64efd1ca01c38e", "room_name": "16",
-    "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "3", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
-  }, {
-    "_id": "65a48e674a64efd1ca01c391", "room_name": "17",
-    "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "5", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-15 10:46:15"
-  }, {
-    "_id": "65a54a4b4a64efd1ca0384dc", "room_name": "2",
-    "ward_name": "63병동", "editBy": "ext-linker", "room_bedNum": "2", "room_isValid": 1, "room_type": "CU", "updatedAt": "2024-01-22 14:15:06", "createdAt": "2024-01-16 00:07:55"
-  }]
+
 })
-itemList.value.data.sort((a, b) => {
-  const bedNumA = parseInt(a.room_name);
-  const bedNumB = parseInt(b.room_name);
-  return bedNumA - bedNumB;
-});
 
 let beforeIndex;
 function convertToRoom(roomNumber, type, index) {
@@ -581,7 +555,6 @@ function isEmptyBed(startPoint, endPoint) {
   return true
 }
 
-const wardList = ["61병동", "63병동", "133병동", "81병동"]
 const selectWard = ref(route.query.id)
 
 watch((pageNumber), () => {
@@ -591,8 +564,11 @@ watch((pageNumber), () => {
   // todo 만약 페이지 수 넘는 데이터가 있다? 그러면 지우기 
 })
 
-onBeforeMount(() => {
-  getContents(contents)
+onBeforeMount(async () => {
+
+  await getContentsItem()
+  await getContents()
+
   settingContents()
   // getCreatedPageData()
 })

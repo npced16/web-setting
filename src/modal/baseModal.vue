@@ -14,6 +14,7 @@ import { defineProps, defineEmits, computed, onMounted, onUnmounted } from 'vue'
 import settingSpaceModal from '@modal/modalItem/settingSpaceModal.vue';
 import paringListModal from '@modal/modalItem/paringListModal.vue';
 import settingRoomModal from './modalItem/settingRoomModal.vue';
+import settingAccountModal from '@modal/modalItem/settingAccountModal.vue'
 const props = defineProps(['modalName', 'data'])
 const emit = defineEmits(['closeModal'])
 const getCompoent = computed(() => {
@@ -24,7 +25,8 @@ const getCompoent = computed(() => {
       return paringListModal
     case 'settingRoomModal':
       return settingRoomModal
-
+    case 'settingAccountModal':
+      return settingAccountModal
   }
 })
 function closeModal() {

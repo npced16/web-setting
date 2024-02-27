@@ -19,7 +19,7 @@
               </div>
             </div>
           </div>
-          <div class="block sm:hidden absolute inset-y-0 right-0  items-end p-2  text- ">
+          <div class="block sm:hidden absolute inset-y-0 right-0  items-end p-2  text-white ">
             <div class="border-2 rounded-md h-full w-16 text-center" @click="chageMenu">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-full w-full" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">

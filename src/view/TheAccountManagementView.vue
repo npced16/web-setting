@@ -1,5 +1,7 @@
 <template>
-  <div class="flex gap-6 px-4 py-2 justify-between">
+  <baseModal v-if="modalFlag" :modal-name="modalName" :data="modalData" @close-modal="closeModal">
+  </baseModal>
+  <div class="flex sm:gap-6 px-4 py-2 justify-between">
     <!-- <div class="bounce"></div> -->
     <Listbox as="div" v-model="selectWard">
       <div class="flex">
@@ -40,7 +42,7 @@
       </div>
     </Listbox>
     <label
-      class="cursor-pointer border text-center items-center rounded-lg border-blue-500 px-2 py-1 bg-white text-blue-500 hover:text-white hover:bg-blue-500">
+      class="cursor-pointer border text-center items-center rounded-lg border-blue-500 sm:px-2 py-1 bg-white text-blue-500 hover:text-white hover:bg-blue-500">
       계정 일괄 등록
       <input type="file" @change="handleFileUpload" accept=".xlsx" />
     </label>
@@ -53,8 +55,10 @@
             <tr class=" text-xs  text-center text-white  bg-[#6B6B6B]">
               <th class="px-1 py-3 rounded-l-lg ">ID</th>
               <th class="px-1 py-3">이름</th>
-              <th class="px-1 py-3">병동</th>
-              <th class="px-1 py-3">팀</th>
+              <th class="px-1 py-3">전화번호 </th>
+              <th class="px-1 py-3">성별</th>
+              <th class="px-1 py-3">팀명</th>
+              <th class="px-1 py-3">병동명</th>
               <th class="px-1 rounded-r-lg  py-3">관리</th>
             </tr>
             <tr>
@@ -62,19 +66,20 @@
             </tr>
           </thead>
           <tbody class="h-5 overflow-auto">
-            <tr class="" v-for="item in accountList" :key="item">
-              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.space_id }}</td>
-              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.space_name }}</td>
-              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.['space_type(DR, CU)'] }}</td>
-              <td class="px-2 py-1  border text-md font-semibold text-center">
-                {{ item?.['space_unit(hospital, ward, room,bed)'] }}</td>
+            <tr class="" v-for="item in roomList" :key="item">
+              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.mb_id }}</td>
+              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.mb_name }}</td>
+              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.mb_phone }}</td>
+              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.mb_sex }}</td>
+              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.mb_team }}</td>
+              <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.mb_ward }}</td>
               <td class="px-2 py-1  lg:w-64 border text-md font-semibold text-center">
                 <div class="flex  justify-around">
                   <button type="button" class="py-1 px-3 text-base font-medium text-white focus:outline-none bg-[#678FFF] rounded-lg border border-[#678FFF]
-        hover:bg-white hover:text-[#678FFF]  focus:z-10 focus:ring-4 focus:ring-gray-200 ">
+        hover:bg-white hover:text-[#678FFF]  focus:z-10 focus:ring-4 focus:ring-gray-200"
+                    @click="openModal('settingAccountModal', item)">
                     수정
                   </button>
-
                   <button type="button" class="py-1 px-3  text-base font-medium text-white focus:outline-none bg-red-500 rounded-lg  border border-red-500
         hover:bg-white hover:text-red-500   focus:z-10 focus:ring-4 focus:ring-gray-200">
                     삭제
@@ -102,15 +107,48 @@
   </div> -->
 </template>
 <script setup>
+import baseModal from '@/modal/baseModal.vue';
+
 import { ref, onBeforeMount, reactive, computed, watch } from 'vue';
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronDownIcon, UserIcon } from '@heroicons/vue/20/solid'
 import ExcelJS from "exceljs";
+
+// modal 
+const modalFlag = ref(false);
+const modalName = ref('');
+let modalData = reactive({ data: 'none' });
+function openModal(name, data) {
+  modalData = data
+  modalName.value = name
+  modalFlag.value = true
+}
+function closeModal() {
+  modalFlag.value = false
+}
+
+
+
 const selectWard = ref(null)
 const wardList = reactive(['61병동', '62병동'])
 
 
-const accountList = reactive([])
+const roomList = reactive([
+  {
+    _id: '659cdf065482a196bb7bb21a',
+    mb_id: 'admin',
+    mb_password: 'U2FsdGVkX19T0i+NRr7y6CqemC1LnfSYpjoF1oOYFC0=',
+    mb_name: '최고관리자',
+    mb_level: 0,
+    mb_birth: '1996-02-06',
+    mb_phone: '',
+    mb_sex: 'M',
+    mb_team: '',
+    mb_ward: '52병동',
+    updatedAt: '2024-02-15 11:33:03',
+    createdAt: '2024-01-09 14:52:06'
+  }
+])
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
@@ -158,7 +196,7 @@ async function loadFile(FileName) {
   }
 }
 async function addAccount(tempObject) {
-  accountList.push(tempObject)
+  roomList.push(tempObject)
   // TODO 나중에 통신으로 데이터추가하게 변경해야함
 
 }

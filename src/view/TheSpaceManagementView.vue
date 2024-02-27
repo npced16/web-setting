@@ -123,8 +123,8 @@ import ExcelJS from "exceljs";
 const modalFlag = ref(false);
 const modalName = ref('');
 let modalData = reactive({ data: 'none' });
-function openModal(name, item) {
-  modalData = item
+function openModal(name, data) {
+  modalData = data
   modalName.value = name
   modalFlag.value = true
 }
