@@ -6,6 +6,7 @@ export const useClientStore = defineStore("client", () => {
 	// const server = ref("http://172.30.188.30");
 	const version = ref("v1");
 	// 접속한 병원 카
+	// const key = "ku-guro";
 	const key = "ku-guro";
 	// Default values or values from localStorage
 	function loadStateLocalStorage() {

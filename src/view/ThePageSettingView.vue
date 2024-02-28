@@ -8,7 +8,7 @@
             <ListboxButton
               class="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 sm:text-sm sm:leading-6">
               <span class="flex items-center">
-                <span v-if="selectWard != null" class="ml-3 block truncate">{{ selectWard }}</span>
+                <span v-if="selectWard != null" class="ml-3 block truncate">{{ selectWard.ward_name }}</span>
                 <span v-else class="block truncate">병동을 선택해 주세요</span>
               </span>
               <span class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
@@ -19,13 +19,13 @@
               leave-to-class="opacity-0">
               <ListboxOptions
                 class="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                <ListboxOption as="template" v-for="ward in wardList" :key="ward" :value="ward"
+                <ListboxOption as="template" v-for="ward in wardList" :key="ward.ward_name" :value="ward"
                   v-slot="{ active, selected }">
                   <li
                     :class="[active ? 'bg-blue-400 text-white' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
                     <div class="flex items-center">
                       <span :class="[selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate']">
-                        {{ ward }}
+                        {{ ward.ward_name }}
                       </span>
                     </div>
                     <span v-if="selected"
@@ -80,9 +80,9 @@
       </div>
     </header>
 
-    <body class="flex gap-4 px-4 py-2   sm:flex-row flex-col">
+    <body class="flex gap-4 px-4 py-2  sm:h-[75vh] sm:flex-row flex-col">
       <section class="w-full  sm:w-3/12  border-b-2 border-black pb-10 sm:border-0 min-w-[240px]  ">
-        <div class="overflow-y-auto  max-h-[70vh] ">
+        <div class="overflow-y-auto   ">
           <table class=" w-full overflow-x-auto border-separate border-spacing-0   ">
             <thead class="w-full rounded-lg border sticky top-0   ">
               <tr class=" text-xs  text-center text-white  bg-[#6B6B6B]">
@@ -111,7 +111,7 @@
                     <div class="text-gray-300 mx-1">-</div>
                     <input class="w-full border border-1 h-8 border-gray-300 text-center rounded-md"
                       :value="currDataList[list.room_name]?.endPoint"
-                      @input="updatePoint(list.room_bedNum, list.room_name, $event.target.value, 'end')"
+                      @input="updatePoint(list.room_bedNum, list.room_name, $event.target.value, true)"
                       @blur="errorMessage = null" placeholder="종료값 입력">
                   </div>
                 </td>
@@ -121,10 +121,10 @@
         </div>
       </section>
       <div class="w-full min-w-[230px] overflow-auto">
-        <div class="flex flex-auto w-full flex-wrap h-full  max-h-[70vh] ">
+        <div class="flex flex-auto w-full flex-wrap h-full max-h-[70vh] ">
           <div v-for="columnIndex in pageNumber" :key="columnIndex" class="  "
-            :class="[pageNumber == 1 ? 'w-full ' : 'w-full sm:w-3/6', pageNumber <= 2 ? 'h-full' : '']">
-            <div class="flex">
+            :class="[pageNumber == 1 ? 'w-full ' : 'w-full pb-8 sm:pb-0 sm:w-3/6', pageNumber <= 2 ? 'h-full' : '']">
+            <div class="flex ">
               <div class="w-1/3 text-center" v-for=" index in Number(yAxis[columnIndex - 1])">
                 {{ numberToAlphabet(getStartColumnForPageIndex(columnIndex) - 1 + index) }}
               </div>
@@ -136,14 +136,14 @@
                 :class="[`box-${content?.type}`]">
                 {{ convertToRoom(content?.name, content?.type, index) }}
                 <span v-if="content?.type === 'bed'">- {{ index - beforeIndex }}</span>
-                <span v-if="(content == '' || content == null)" class="box-empty  ">
+                <div v-if="(content == '' || content == null)" class="flex items-center justify-center  box-empty  ">
                   {{ numberToAlphabet(getStartColumnForPageIndex(columnIndex) + parseInt(index / 12)) }}
                   {{ index % xAxis + 1 }}
-                </span>
+                </div>
               </div>
               <div
                 v-for="(content, index) in getLengthByPageNumber(columnIndex) - getArrayByPageNumber(columnIndex).length"
-                class=" box-empty">
+                class="flex items-center justify-center box-empty">
                 {{ numberToAlphabet(
                   getStartColumnForPageIndex(columnIndex) + parseInt((getArrayByPageNumber(columnIndex).length + index)
                     / 12)) }}
@@ -189,9 +189,11 @@ import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } f
 import { CheckIcon, ChevronDownIcon } from '@heroicons/vue/20/solid'
 import { useRoute, useRouter } from 'vue-router';
 import { useClientStore } from '@/store/client'
+import qs from 'qs'
+
 const clientStore = useClientStore();
 const route = useRoute();
-const yAxis = reactive([3, 3, 3, 3])
+let yAxis = reactive([3, 3, 3, 3])
 const xAxis = ref(12)
 const tempXData = ref(xAxis.value)
 const pageNumber = ref(4)
@@ -203,11 +205,7 @@ function chageXaxis() {
     currDataList[item].endPoint = null
     currDataList[item].startPoint = null
   }
-
 }
-
-const temp = reactive({ data: [] })
-
 function handlerDateInput(index) {
   const inputValue = yAxis[index];
   if (inputValue < 1) {
@@ -216,7 +214,6 @@ function handlerDateInput(index) {
     yAxis[index] = 10;
   }
 };
-
 /**
  * 페이지번호에 따른 그리드 반환
  * @param {Number} pageNumber
@@ -236,27 +233,51 @@ function getGridStyleOfIndex(pageNumber) {
 
 function savePageData() {
   let serializedArrays = [];
+  let temp = []
+
+  //  페이지별 나누기
   for (let pageNum = 1; pageNum < pageNumber.value + 1; pageNum++) {
     let pageArray = getArrayByPageNumber(pageNum);
+    // 전체 조회 후 빈칸 시 "" 로 변환
     for (let i = 0; i < yAxis[pageNum - 1] * xAxis.value; i++) {
       if (pageArray[i] == null) {
         pageArray[i] = "";
       }
     }
-    serializedArrays[pageNum - 1] = JSON.stringify(pageArray);
+    for (let j = 0; j < yAxis[pageNum - 1]; j++) {
+      const slicedPart = pageArray.slice(j * xAxis.value, (j + 1) * xAxis.value);
+      temp.push(slicedPart);
+    }
+    // console.log('pageArray :>> ', pageArray, temp);
+    serializedArrays[pageNum - 1] = { size: yAxis[pageNum - 1], col: temp };
+    temp = []
   }
-  console.log(serializedArrays);
-  // TODO: serializedArrays 보내기
-  const apiConfig = {
-    method: "get",
-    url: 'http://dev.finenurse.co.kr/api/finenurse/web/v1/setting/client?type=display&ward=133%EB%B3%91%EB%8F%99'
+
+  console.log('contents :>> ', JSON.stringify(serializedArrays), JSON.stringify(serializedArrays) == selectWard.value.contents, selectWard.value);
+  const payload = {
+    type: "display",
+    key: clientStore.key,
+    ward: selectWard.value.ward_name,
+    // room: selectWard.value.room_name,
+    contents: JSON.stringify(serializedArrays),
+  }
+  const config = {
+    method: "post",
+    url: 'http://dev.finenurse.co.kr/api/finenurse/web/v1/setting',
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    data: qs.stringify(payload),
   };
-  axios(apiConfig)
-    .then(response => {
+  axios(config)
+    .then(res => {
       // 응답 처리
+      getWardList()
+      console.log('res :>> ', res);
     })
-    .catch(error => {
+    .catch(err => {
       // 오류 처리
+      console.error('err :>> ', err);
     });
 }
 
@@ -290,84 +311,9 @@ function getStartColumnForPageIndex(pageIndex) {
 
 // 현재 병동에 해당하는 데이터
 let currDataList = reactive({})
+let wardList = reactive([])
+let totalItemInWard = reactive([])
 
-
-async function getContents() {
-  const payload = {
-    key: clientStore.key
-  }
-  const config = {
-    method: "get",
-    url: clientStore.getClinetSettingUrl() + `?key=${payload.key}`
-  };
-  const temp = await axios(config).then((res) => {
-    console.log('res.data :>> ', res.data.data[3].ward_name);
-    return res.data.data[3].contents
-  })
-  calcContent(temp)
-}
-async function getContentsItem() {
-  const payload = {
-    key: clientStore.key
-  }
-  const config = {
-    method: "get",
-    url: clientStore.getClinetItemSettingUrl() + `?key=${payload.key}`
-  };
-  itemList.value = await axios(config).then((res) => {
-    console.log('res :>> ', res.data.data.ward["51병동"], res.data.data.ward);
-    return res.data.data.ward["51병동"]
-  })
-  // itemList.value.sort((a, b) => {
-  //   const bedNumA = parseInt(a.room_name);
-  //   const bedNumB = parseInt(b.room_name);
-  //   return bedNumA - bedNumB;
-  // });
-
-  // .find((data) => data === "51병동")
-}
-function calcContent(temp) {
-  let size = 0
-  let currDataIndex = 0
-  const Demo = JSON.parse(temp)
-  console.log('object :>> ', Demo);
-  // if (!temp.data) return); 
-  for (const content of Demo) {
-
-    for (const item in content.col) {
-      let count = 0 //
-      for (const data of content.col[item]) {
-        ++count
-        if (data.type == 'room') {
-          if (!currDataList[data.name]) {
-            currDataList[data.name] = {
-              startPoint: numberToAlphabet(parseInt(item) + size) + count,
-              start: currDataIndex,
-              end: 0,
-              endPoint: null
-            }
-            currDataArray[currDataIndex] = { type: 'room', name: data.name }
-            if (!currDataList?.table) {
-              currDataList.table = {};
-            }
-            if (!currDataList.table[item]) {
-              currDataList.table[item] = [data.name];
-            } else {
-              currDataList.table[item].push(data.name); ``
-            }
-          }
-        }
-        if (data.type == 'bed') {
-          currDataList[data.name].endPoint = numberToAlphabet(parseInt(item) + size) + count
-          currDataList[data.name].end = currDataIndex
-          currDataArray[currDataIndex] = { type: 'bed', name: data.name }
-        }
-        currDataIndex++
-      }
-    }
-    size += content.size // 다음 table 시 size 설정용
-  }
-}
 
 function numberToAlphabet(number) {
   if (parseInt(number) >= 26) {
@@ -398,11 +344,9 @@ function settingContents() {
 /**
  *  병실의 목록 가져오기
  */
-const itemList = ref({
-
-})
-
+const itemList = ref({})
 let beforeIndex;
+
 function convertToRoom(roomNumber, type, index) {
   if (type == 'room') {
     beforeIndex = index;
@@ -412,6 +356,7 @@ function convertToRoom(roomNumber, type, index) {
 function convertToRoomNumber(roomNumber) {
   if (roomNumber) return `${String(roomNumber).padStart(2, '0')}호`;
 }
+
 /**
  * 문자열을 받아 계산하여 새로운 값을 반환하는 함수입니다.
  *
@@ -421,7 +366,7 @@ function convertToRoomNumber(roomNumber) {
  * @returns {(<Map>|boolean)} - 계산된 Map 혹은 false
  *                          
  */
-function addNumberToCell(roomBedNum, value, pointName) {
+function addNumberToCell(roomBedNum, value, descendingOrder) {
   const baseRegex = /^([a-zA-Z]{1,2})([0-9]+)$/;
   // 입력값이 없거나 정규식과 매치되지 않으면 false 반환
   if (!value || value.match(baseRegex) === null) {
@@ -445,7 +390,7 @@ function addNumberToCell(roomBedNum, value, pointName) {
   }
   // 결과 숫자 계산
 
-  if (pointName) {
+  if (descendingOrder) {
     endNumber = Number(baseNum) - Number(roomBedNum);
 
     return {
@@ -473,23 +418,24 @@ function addNumberToCell(roomBedNum, value, pointName) {
  * @param {*} roomBedNum 침상 수
  * @param {*} roomName 병실 이름
  * @param {*} value 입력값
- * @param {*} pointName Null || 'end' -어떤 포인트에 대한 작업인지를 알려는 것   
+ * @param {*} descendingOrder  Null || true -어떤 포인트에 대한 작업인지를 알려는 것   
  */
-function updatePoint(roomBedNum, roomName, value, pointName) {
+function updatePoint(roomBedNum, roomName, value, descendingOrder) {
   deleteBedInList(roomName)
-  const convertRoomNumber = addNumberToCell(roomBedNum, value, pointName);
+  const convertRoomNumber = addNumberToCell(roomBedNum, value, descendingOrder);
   if (!isEmptyBed(convertRoomNumber.start, convertRoomNumber.end)) {
     errorMessage.value = '다른 값이 이미 들어가 있습니다.'
-    return resetPoints(roomName, value, pointName)
+    return resetPoints(roomName, value, descendingOrder)
   }
   if (convertRoomNumber == false) {
     errorMessage.value = '입력 값 이 잘못되었습니다.'
-    return resetPoints(roomName, value, pointName)
+    return resetPoints(roomName, value, descendingOrder)
   }
   if (convertRoomNumber.overFlow) {
     errorMessage.value = '침상 수가 범위를 벗어납니다.'
-    return resetPoints(roomName, value, pointName)
+    return resetPoints(roomName, value, descendingOrder)
   }
+
   let beforeStartIndex = null
   let beforeEndIndex = null
   let currCurrIndex = 0
@@ -500,7 +446,7 @@ function updatePoint(roomBedNum, roomName, value, pointName) {
   }
   if (isEmptyBed(beforeStartIndex, beforeEndIndex)) {
     errorMessage.value = '이전 페이지가 비어있음';
-    return resetPoints(roomName, value, pointName)
+    return resetPoints(roomName, value, descendingOrder)
   }
   addBedInList(roomName, convertRoomNumber.start, convertRoomNumber.end)
   errorMessage.value = null
@@ -509,8 +455,8 @@ function updatePoint(roomBedNum, roomName, value, pointName) {
 }
 
 
-function resetPoints(roomName, value, flag) {
-  if (flag) {
+function resetPoints(roomName, value, descendingOrder) {
+  if (descendingOrder) {
     currDataList[roomName].startPoint = null;
     currDataList[roomName].endPoint = value;
   } else {
@@ -533,18 +479,19 @@ function deleteBedInList(roomName) {
 
 /**
  * 침상 추가 
- * @param {Number} roomBedNum 침상 이름 
+ * @param {Number} roomName 침상 이름 
  * @param {Number} startPoint 시작 위치 
  * @param {Number} endPoint 끝 위치
  */
-function addBedInList(roomBedNum, startPoint, endPoint) {
+function addBedInList(roomName, startPoint, endPoint) {
   for (let i = startPoint - 1; i < endPoint; i++) {
     if (i == startPoint - 1) {
-      currDataArray[i] = { type: 'room', name: roomBedNum }
+      currDataArray[i] = { type: 'room', name: roomName }
     } else
-      currDataArray[i] = { type: 'bed', name: roomBedNum }
+      currDataArray[i] = { type: 'bed', name: roomName }
   }
 }
+
 function isEmptyBed(startPoint, endPoint) {
   if (startPoint && endPoint) {
     const newArray = currDataArray.slice(startPoint, endPoint)
@@ -555,21 +502,119 @@ function isEmptyBed(startPoint, endPoint) {
   return true
 }
 
-const selectWard = ref(route.query.id)
 
+
+async function getWardList() {
+  const payload = {
+    key: clientStore.key
+  }
+  const config = {
+    method: "get",
+    url: clientStore.getClinetSettingUrl()
+      + `?key=${payload.key}`
+  };
+  await axios(config).then((res) => {
+    wardList = res.data.data
+    wardList.sort((a, b) => {
+      const wardNameA = a.ward_name; // 소문자로 변환하여 비교
+      const wardNameB = b.ward_name; // 소문자로 변환하여 비교
+      if (wardNameA < wardNameB) return -1;
+      if (wardNameA > wardNameB) return 1;
+      return 0;
+    });
+  })
+}
+
+async function getContentsItem() {
+  const payload = {
+    type: 'display',
+    key: clientStore.key
+  }
+  const config = {
+    method: "get",
+    url: clientStore.getClinetItemSettingUrl() + `?type=${payload.type}&key=${payload.key}`
+  };
+  totalItemInWard = await axios(config).then((res) => {
+    return res.data.data.ward
+  })
+}
+
+function calcContent(temp) {
+  let size = 0
+  let currDataIndex = 0
+  if (!temp) return
+  for (const content of temp) {
+    for (const item in content.col) {
+      let count = 0 //
+      for (const data of content.col[item]) {
+        ++count
+        if (data.type == 'room') {
+          if (!currDataList[data.name]) {
+            currDataList[data.name] = {
+              startPoint: numberToAlphabet(parseInt(item) + size) + count,
+              start: currDataIndex,
+              end: 0,
+              endPoint: null
+            }
+            currDataArray[currDataIndex] = { type: 'room', name: data.name }
+            // if (!currDataList?.table) {
+            //   currDataList.table = {};
+            // }
+            // if (!currDataList.table[item]) {
+            //   currDataList.table[item] = [data.name];
+            // } else {
+            //   currDataList.table[item].push(data.name); ``
+            // }
+          }
+        }
+        if (data.type == 'bed') {
+          currDataList[data.name].endPoint = numberToAlphabet(parseInt(item) + size) + count
+          currDataList[data.name].end = currDataIndex
+          currDataArray[currDataIndex] = { type: 'bed', name: data.name }
+        }
+        currDataIndex++
+      }
+    }
+    size += content.size // 다음 table 시 size 설정용
+  }
+}
+
+const selectWard = ref()
+// route.query.id
+watch((selectWard), () => {
+  const content = JSON.parse(selectWard.value.contents)
+  currDataArray = []
+  currDataList = {}
+  xAxis.value = content[0].col[0].length
+  tempXData.value = xAxis.value
+  // 페이지 번호 & 
+  pageNumber.value = content.length
+  yAxis = []
+  for (const page of content) {
+    yAxis.push(page.size)
+  }
+
+  // 현재 설정된 페이지 가져오기
+  calcContent(content)
+
+  // Room 데이터 기반으로 반영 
+  itemList.value = totalItemInWard[selectWard.value.ward_name]
+  settingContents()
+})
 watch((pageNumber), () => {
   while (pageNumber.value > yAxis.length) {
     yAxis.push(3)
   }
   // todo 만약 페이지 수 넘는 데이터가 있다? 그러면 지우기 
+
 })
-
+// 전체 데이터 가져오기!
 onBeforeMount(async () => {
-
   await getContentsItem()
-  await getContents()
-
-  settingContents()
+  await getWardList()
+  if (route.query.id) {
+    selectWard.value = wardList.find((ward) => ward.ward_name == route.query.id)
+  }
   // getCreatedPageData()
 })
 
@@ -599,6 +644,7 @@ onBeforeMount(async () => {
 .box-empty {
   background: #F0F0F0 0% 0% no-repeat padding-box;
   text-align: center;
+
   font-size: .9rem;
   height: 100%;
   width: 100%;
