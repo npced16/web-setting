@@ -19,14 +19,13 @@
 					<td class="px-2 py-1  border text-md font-semibold text-center">{{ spaceData?.mb_phone }}</td>
 					<td class="px-2 py-1  border text-md font-semibold text-center">{{ spaceData?.mb_sex }}</td>
 					<td class="px-2 py-1  border text-md font-semibold text-center">
-						<input type="text" :id="key" v-model="spaceData.mb_team"
+						<input type="text" v-model="spaceData.mb_team"
 							class="w-full h-full p-2 focus:outline-none text-center  focus:ring-indigo-500 focus:border-indigo-500">
 					</td>
 					<td class="px-2 py-1  border text-md font-semibold text-center">
-						<input type="text" :id="key" v-model="spaceData.mb_ward"
+						<input type="text" v-model="spaceData.mb_ward"
 							class="w-full h-full p-2 focus:outline-none text-center  focus:ring-indigo-500 focus:border-indigo-500">
 					</td>
-					<td>{{ demodata }}</td>
 				</tr>
 			</tbody>
 		</table>

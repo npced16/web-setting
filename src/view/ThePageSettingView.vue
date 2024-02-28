@@ -532,7 +532,7 @@ async function getContentsItem() {
   }
   const config = {
     method: "get",
-    url: clientStore.getClinetItemSettingUrl() + `?type=${payload.type}&key=${payload.key}`
+    url: clientStore.getClinetItemUrl() + `?type=${payload.type}&key=${payload.key}`
   };
   totalItemInWard = await axios(config).then((res) => {
     return res.data.data.ward
@@ -615,7 +615,6 @@ onBeforeMount(async () => {
   if (route.query.id) {
     selectWard.value = wardList.find((ward) => ward.ward_name == route.query.id)
   }
-  // getCreatedPageData()
 })
 
 

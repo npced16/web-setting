@@ -15,7 +15,7 @@
             </tr>
           </thead>
           <tbody class="h-5 overflow-auto">
-            <tr class="" v-for="item in wardList" :key="item">
+            <tr class="" v-for="item in wardList.data" :key="item">
               <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.ward_name }}</td>
               <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.ward_code }}</td>
               <td class="px-2 py-1  lg:w-64 border text-md font-semibold text-center">
@@ -42,74 +42,28 @@
 </template>
 <script setup>
 import { ref, onBeforeMount, reactive, computed, watch } from 'vue';
-import ExcelJS from "exceljs";
-const wardList = reactive([
-  {
-    ward_name: '71병동',
-    editBy: 'ext-linker',
-    ward_code: '107010',
-    updatedAt: '2024-02-15 14:12:57',
-    ward_isValid: 1,
-    createdAt: '2024-01-09 14:52:06'
+import axios from "axios"
+import { useClientStore } from '@/store/client';
+const clientStore = useClientStore()
+const wardList = reactive({})
+async function getWardList() {
+  const payload = {
+    key: clientStore.key
   }
-])
-
+  const config = {
+    method: "get",
+    url: clientStore.getWardUrl() + `?key=${payload.key}`
+  };
+  wardList.data = await axios(config).then((res) => {
+    return res.data.data
+  })
+}
 function getLinkTo(wardName) {
-  console.log('wardName :>> ', wardName);
   return { name: 'settingPage', query: { id: wardName } };
 }
-const handleFileUpload = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    loadFile(file)
-  }
-  event.target.value = null;
-}
-
-async function loadFile(FileName) {
-  try {
-    const workbook = new ExcelJS.Workbook();
-    const reader = new FileReader()
-    let header = {}
-    let headerKeys = []
-    reader.readAsArrayBuffer(FileName)
-    reader.onload = () => {
-      const buffer = reader.result;
-      workbook.xlsx.load(buffer).then(wb => {
-        wb.eachSheet((sheet, id) => {
-          sheet.eachRow((row, rowIndex) => {
-            if (rowIndex == 1) {
-              for (const item of row.values) {
-                if (item != undefined) {
-                  header[item] = ''
-                }
-              }
-              headerKeys = Object.keys(header)
-            }
-            else {
-              const tempObject = {}
-              for (let index = 0; index < headerKeys.length; index++) {
-                tempObject[headerKeys[index]] = row.values[index + 1];
-              }
-              addAccount(tempObject)
-              // console.log('header :>> ', tempObject, headerKeys, header);
-              // console.log(row.values.length, rowIndex, row.values)
-            }
-
-          })
-        })
-      })
-    }
-  } catch (error) {
-    console.error("잘못된 양식의 파일입니다.", error)
-  }
-}
-async function addAccount(tempObject) {
-  wardList.push(tempObject)
-  // TODO 나중에 통신으로 데이터추가하게 변경해야함
-
-}
-
+onBeforeMount(() => {
+  getWardList()
+})
 
 
 </script>
