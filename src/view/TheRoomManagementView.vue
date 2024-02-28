@@ -65,7 +65,7 @@
             </tr>
           </thead>
           <tbody class="h-5 overflow-auto">
-            <tr class="" v-for="item in roomList" :key="item">
+            <tr class="" v-for="item in roomList.data" :key="item">
               <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.room_name }}</td>
               <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.ward_name }}</td>
               <td class="px-2 py-1  border text-md font-semibold text-center">{{ item?.room_bedNum }}</td>
@@ -107,12 +107,35 @@
 </template>
 <script setup>
 import baseModal from '@/modal/baseModal.vue';
-
 import { ref, onBeforeMount, reactive, computed, watch } from 'vue';
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronDownIcon, UserIcon } from '@heroicons/vue/20/solid'
+import { useClientStore } from '@/store/client';
 import ExcelJS from "exceljs";
-
+import axios from "axios"
+const clientStore = useClientStore()
+async function getRoomList() {
+  const payload = {
+    key: clientStore.key
+  }
+  const config = {
+    method: "get",
+    url: clientStore.getRoomUrl() + `?key=${payload.key}`
+  };
+  roomList.data = await axios(config).then((res) => {
+    return res.data.data
+  })
+  roomList.data.sort((a, b) => {
+    const wardNameA = a.room_name; // 소문자로 변환하여 비교
+    const wardNameB = b.room_name; // 소문자로 변환하여 비교
+    if (wardNameA < wardNameB) return -1;
+    if (wardNameA > wardNameB) return 1;
+    return 0;
+  });
+}
+onBeforeMount(() => {
+  getRoomList()
+})
 // modal 
 const modalFlag = ref(false);
 const modalName = ref('');

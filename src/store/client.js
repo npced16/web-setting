@@ -5,16 +5,16 @@ export const useClientStore = defineStore("client", () => {
 	const server = "http://dev.finenurse.co.kr";
 	// const server = ref("http://172.30.188.30");
 	const version = "v1";
-	// 접속한 병원 카
 	// const key = "ku-guro";
 	const key = "ku-guro";
-	// Default values or values from localStorage
 
-	// http://dev.finenurse.co.kr/api/finenurse/web/v1/setting/client?
-
+	// URL 대입 용도
 	const finenurseUrl = () => server + "/api/finenurse/" + version;
 	const finenurseWebUrl = () => server + "/api/finenurse/web/" + version;
+
+	// 실제 URL
 	const getWardUrl = () => finenurseUrl() + "/ward";
+	const getRoomUrl = () => finenurseUrl() + "/room";
 	const getMemberUrl = () => finenurseUrl() + "/member";
 	const getClinetItemUrl = () => finenurseWebUrl() + "/setting";
 	const getClinetSettingUrl = () => finenurseWebUrl() + "/setting/client";
@@ -46,6 +46,7 @@ export const useClientStore = defineStore("client", () => {
 		getWardUrl,
 		getMemberUrl,
 		getClinetItemUrl,
+		getRoomUrl,
 
 		//action
 		// saveStateToLocalStorage,
