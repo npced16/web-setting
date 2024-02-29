@@ -1,5 +1,5 @@
 <template>
-	Rooom 수정하기
+	<span class="text-black text-2xl"> Rooom 수정하기</span>
 	<div class="overflow-x-auto text-md ">
 		<table class="min-w-full divide-y divide-gray-200">
 			<thead class="bg-gray-100">

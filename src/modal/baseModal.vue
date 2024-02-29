@@ -13,8 +13,9 @@
 import { defineProps, defineEmits, computed, onMounted, onUnmounted } from 'vue'
 import settingSpaceModal from '@modal/modalItem/settingSpaceModal.vue';
 import paringListModal from '@modal/modalItem/paringListModal.vue';
-import settingRoomModal from './modalItem/settingRoomModal.vue';
+import settingRoomModal from '@modal/modalItem/settingRoomModal.vue';
 import settingAccountModal from '@modal/modalItem/settingAccountModal.vue'
+import addRoomModal from '@modal/modalItem/addRoomModal.vue';
 const props = defineProps(['modalName', 'data'])
 const emit = defineEmits(['closeModal'])
 const getCompoent = computed(() => {
@@ -27,6 +28,8 @@ const getCompoent = computed(() => {
       return settingRoomModal
     case 'settingAccountModal':
       return settingAccountModal
+    case 'addRoomModal':
+      return addRoomModal
   }
 })
 function closeModal() {

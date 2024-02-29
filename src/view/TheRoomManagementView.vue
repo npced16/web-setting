@@ -41,11 +41,18 @@
         </div>
       </div>
     </Listbox>
-    <label
-      class="cursor-pointer border text-center items-center rounded-lg border-blue-500 sm:px-2 py-1 bg-white text-blue-500 hover:text-white hover:bg-blue-500">
-      계정 일괄 등록
-      <input type="file" @change="handleFileUpload" accept=".xlsx" />
-    </label>
+    <div class="flex gap-3">
+      <button
+        class="cursor-pointer border text-center items-center rounded-lg border-blue-500 sm:px-2 py-1 bg-white text-blue-500 hover:text-white hover:bg-blue-500"
+        @click.prevent="openModal('addRoomModal')">
+        Room 추가 하기
+      </button>
+      <label
+        class="cursor-pointer border text-center items-center rounded-lg border-blue-500 sm:px-2 py-1 bg-white text-blue-500 hover:text-white hover:bg-blue-500">
+        계정 일괄 등록
+        <input type="file" @change="handleFileUpload" accept=".xlsx" />
+      </label>
+    </div>
   </div>
   <div class=" px-4 py-2 ">
     <section class="container   mx-auto ">
@@ -53,7 +60,7 @@
         <table class=" w-full overflow-x-auto border-separate border-spacing-0   ">
           <thead class="w-full rounded-lg border sticky top-0   ">
             <tr class=" text-xs  text-center text-white  bg-[#6B6B6B]">
-              <th class="px-1 py-3 rounded-l-lg ">ID</th>
+              <th class="px-1 py-3 rounded-l-lg ">Room ID </th>
               <th class="px-1 py-3">병동 이름</th>
               <th class="px-1 py-3">침상 수 </th>
               <th class="px-1 py-3">침상 초과 여부</th>
@@ -113,23 +120,28 @@ import { CheckIcon, ChevronDownIcon, UserIcon } from '@heroicons/vue/20/solid'
 import { useClientStore } from '@/store/client';
 import ExcelJS from "exceljs";
 import axios from "axios"
+import qs from "qs"
 const clientStore = useClientStore()
 async function getRoomList() {
-  const payload = {
-    key: clientStore.key
-  }
+  const payload = qs.stringify({
+    // key: clientStore.key,
+    // ward: null,
+    // room: null
+    // type: null
+    // isValid: null
+  })
   const config = {
     method: "get",
-    url: clientStore.getRoomUrl() + `?key=${payload.key}`
+    url: clientStore.getRoomUrl() + `?${payload}`
   };
   roomList.data = await axios(config).then((res) => {
     return res.data.data
   })
   roomList.data.sort((a, b) => {
-    const wardNameA = a.room_name; // 소문자로 변환하여 비교
-    const wardNameB = b.room_name; // 소문자로 변환하여 비교
-    if (wardNameA < wardNameB) return -1;
-    if (wardNameA > wardNameB) return 1;
+    const roomNameA = a.room_name; // 소문자로 변환하여 비교
+    const roomNameB = b.room_name; // 소문자로 변환하여 비교
+    if (roomNameA < roomNameB) return -1;
+    if (roomNameA > roomNameB) return 1;
     return 0;
   });
 }
@@ -152,20 +164,20 @@ function closeModal() {
 const selectWard = ref(null)
 const wardList = reactive(['61병동', '62병동'])
 
-
 const roomList = reactive([
-  {
-    _id: '659cdf065482a196bb7bb21a',
-    room_name: '1',
-    ward_name: '통원수술센터',
-    editBy: 'ext-linker',
-    room_bedNum: '1',
-    room_isValid: 1,
-    room_type: 'CU',
-    updatedAt: '2024-02-15 11:33:03',
-    createdAt: '2024-01-09 14:52:06'
-  }
+  // {
+  //   _id: '659cdf065482a196bb7bb21a',
+  //   room_name: '1',
+  //   ward_name: '통원수술센터',
+  //   editBy: 'ext-linker',
+  //   room_bedNum: '1',
+  //   room_isValid: 1,
+  //   room_type: 'CU',
+  //   updatedAt: '2024-02-15 11:33:03',
+  //   createdAt: '2024-01-09 14:52:06'
+  // }
 ])
+
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
@@ -203,7 +215,6 @@ async function loadFile(FileName) {
               // console.log('header :>> ', tempObject, headerKeys, header);
               // console.log(row.values.length, rowIndex, row.values)
             }
-
           })
         })
       })
@@ -213,9 +224,9 @@ async function loadFile(FileName) {
   }
 }
 async function addAccount(tempObject) {
+
   roomList.push(tempObject)
   // TODO 나중에 통신으로 데이터추가하게 변경해야함
-
 }
 
 

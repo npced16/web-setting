@@ -1,5 +1,5 @@
 <template>
-	<h3>더보기</h3>
+	<span class="text-black text-2xl">연동 장비 보기 </span>
 	<div class="overflow-x-auto text-md font-semibold">
 		<table class="min-w-full divide-y divide-gray-200">
 			<thead class="bg-gray-100">
